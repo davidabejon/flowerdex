@@ -3,7 +3,8 @@ export interface Flower {
   id: number;
   name: string;
   latin: string;
-  e: string;
+  e: string; // legacy emoji fallback
+  images: string[]; // image URLs for slider
   desc: string;
   tags: string[];
 }
@@ -36,12 +37,20 @@ export const TAG_STYLE: Record<string, TagStyle> = {
   vibe: { bg: '#f3e5f5', color: '#4a148c', border: '#ba68c8' },
 };
 
+// Placeholder images provided by the user
+export const PLACEHOLDER_IMAGES = [
+  'https://plus.unsplash.com/premium_photo-1676475964992-6404b8db0b53?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zmxvd2VyfGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zmxvd2VyfGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zmxvd2VyfGVufDB8fDB8fHww',
+];
+
 export const FLOWERS: Flower[] = [
   {
     id: 1,
     name: 'Rosa',
     latin: 'Rosa spp.',
     e: '🌹',
+    images: PLACEHOLDER_IMAGES,
     desc: 'La reina indiscutible de las flores. Con su perfume embriagador y sus pétalos aterciopelados, la rosa ha simbolizado el amor y la belleza a lo largo de toda la historia. Existen miles de variedades.',
     tags: ['Rosa', 'Rojo', 'Blanco', 'Amarillo', 'Primavera', 'Verano', 'Copa', 'Europa', 'Romántico', 'Clásico'],
   },
@@ -50,6 +59,7 @@ export const FLOWERS: Flower[] = [
     name: 'Girasol',
     latin: 'Helianthus annuus',
     e: '🌻',
+    images: PLACEHOLDER_IMAGES,
     desc: 'El girasol sigue la trayectoria del sol durante el día, fenómeno llamado heliotropismo. Sus grandes cabezas amarillas son símbolo de alegría y pueden alcanzar más de tres metros de altura.',
     tags: ['Amarillo', 'Verano', 'Margarita', 'América', 'Festivo', 'Silvestre'],
   },
@@ -58,6 +68,7 @@ export const FLOWERS: Flower[] = [
     name: 'Lavanda',
     latin: 'Lavandula angustifolia',
     e: '💜',
+    images: PLACEHOLDER_IMAGES,
     desc: 'Originaria del Mediterráneo, la lavanda es famosa por su aroma relajante y sus delicadas flores violetas en espiga. Se usa en perfumería, aromaterapia y cocina, y atrae a las abejas.',
     tags: ['Violeta', 'Lila', 'Verano', 'Racimo', 'Mediterráneo', 'Romántico', 'Fresco', 'Delicado'],
   },
@@ -66,6 +77,7 @@ export const FLOWERS: Flower[] = [
     name: 'Cerezo',
     latin: 'Prunus serrulata',
     e: '🌸',
+    images: PLACEHOLDER_IMAGES,
     desc: 'El hanami o contemplación del cerezo en flor es una de las tradiciones más queridas de Japón. Sus delicados pétalos rosas duran solo unos días, recordándonos la fugacidad de la belleza.',
     tags: ['Rosa', 'Primavera', 'Copa', 'Japón', 'Asia', 'Romántico', 'Melancólico', 'Delicado'],
   },
@@ -74,6 +86,7 @@ export const FLOWERS: Flower[] = [
     name: 'Tulipán',
     latin: 'Tulipa spp.',
     e: '🌷',
+    images: PLACEHOLDER_IMAGES,
     desc: 'Llegado de Asia Central a Europa en el siglo XVI, el tulipán provocó la mayor burbuja especulativa de la historia: la "tulipomanía" holandesa. Sus formas elegantes lo hacen eterno favorito.',
     tags: ['Rosa', 'Rojo', 'Amarillo', 'Blanco', 'Primavera', 'Copa', 'Europa', 'Asia', 'Clásico', 'Romántico'],
   },
@@ -82,6 +95,7 @@ export const FLOWERS: Flower[] = [
     name: 'Orquídea',
     latin: 'Orchidaceae',
     e: '🪷',
+    images: PLACEHOLDER_IMAGES,
     desc: 'Con más de 28.000 especies, las orquídeas son una de las familias más grandes del reino vegetal. Sus flores son altamente especializadas para atraer a polinizadores específicos.',
     tags: ['Violeta', 'Rosa', 'Blanco', 'Multicolor', 'Todo el año', 'Tubo', 'Asia', 'América', 'Tropical', 'Delicado'],
   },
@@ -90,6 +104,7 @@ export const FLOWERS: Flower[] = [
     name: 'Margarita',
     latin: 'Bellis perennis',
     e: '🌼',
+    images: PLACEHOLDER_IMAGES,
     desc: 'La margarita silvestre crece en prados y cunetas con alegre simplicidad. En la tradición popular se deshojaba para saber si alguien te quería o no.',
     tags: ['Blanco', 'Amarillo', 'Primavera', 'Todo el año', 'Margarita', 'Europa', 'Silvestre', 'Fresco'],
   },
@@ -98,6 +113,7 @@ export const FLOWERS: Flower[] = [
     name: 'Hibisco',
     latin: 'Hibiscus rosa-sinensis',
     e: '🌺',
+    images: PLACEHOLDER_IMAGES,
     desc: 'Flor tropical por excelencia, el hibisco luce grandes flores en forma de trompeta en tonos vibrantes. Es la flor nacional de Malasia y se usa para hacer infusiones y tintes naturales.',
     tags: ['Rojo', 'Naranja', 'Rosa', 'Verano', 'Trompeta', 'Asia', 'África', 'Tropical', 'Festivo'],
   },
@@ -106,6 +122,7 @@ export const FLOWERS: Flower[] = [
     name: 'Hortensia',
     latin: 'Hydrangea spp.',
     e: '💐',
+    images: PLACEHOLDER_IMAGES,
     desc: 'Las hortensias cambian de color según el pH del suelo: ácido para azul, alcalino para rosa. Originarias de Japón, son protagonistas de jardines y arreglos florales por todo el mundo.',
     tags: ['Azul', 'Rosa', 'Lila', 'Blanco', 'Verano', 'Otoño', 'Pompón', 'Japón', 'Asia', 'Romántico', 'Clásico'],
   },
@@ -114,6 +131,7 @@ export const FLOWERS: Flower[] = [
     name: 'Amapola',
     latin: 'Papaver rhoeas',
     e: '🌸',
+    images: PLACEHOLDER_IMAGES,
     desc: 'La amapola roja de los campos de cereal es símbolo de recuerdo y esperanza. Sus pétalos sedosos y efímeros caen al menor toque. Fue asociada al sueño y al descanso en el mundo antiguo.',
     tags: ['Rojo', 'Naranja', 'Primavera', 'Verano', 'Copa', 'Europa', 'Melancólico', 'Silvestre'],
   },
@@ -122,6 +140,7 @@ export const FLOWERS: Flower[] = [
     name: 'Crisantemo',
     latin: 'Chrysanthemum spp.',
     e: '🌸',
+    images: PLACEHOLDER_IMAGES,
     desc: 'En Asia oriental, el crisantemo es símbolo de longevidad y nobleza. En Japón aparece en el sello imperial. Sus pétalos se disponen en pompones perfectos y florece en otoño.',
     tags: ['Amarillo', 'Blanco', 'Violeta', 'Otoño', 'Pompón', 'Japón', 'Asia', 'Clásico', 'Melancólico'],
   },
@@ -130,6 +149,7 @@ export const FLOWERS: Flower[] = [
     name: 'Dalia',
     latin: 'Dahlia spp.',
     e: '🌸',
+    images: PLACEHOLDER_IMAGES,
     desc: 'Originaria de México, la dalia fue llevada a Europa en el siglo XVIII. Con más de 20.000 variedades registradas, ofrece una variedad de formas y colores inigualable.',
     tags: ['Rojo', 'Naranja', 'Violeta', 'Rosa', 'Multicolor', 'Verano', 'Otoño', 'Pompón', 'América', 'Festivo', 'Clásico'],
   },

@@ -41,6 +41,7 @@
   flex: 1;
   position: relative;
   /* reserve space so sticky/fixed footer doesn't cover content */
+  padding-bottom: 72px;
 }
 
 .fe-topbar {
@@ -229,7 +230,7 @@
   display: flex;
   flex-direction: column;
   border-radius: 18px;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
   transition: transform 0.12s;
 }
@@ -249,6 +250,7 @@
   align-items: center;
   justify-content: center;
   font-size: 56px;
+  overflow: hidden;
   position: relative;
 }
 

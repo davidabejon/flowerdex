@@ -1,5 +1,6 @@
 import React from 'react';
 import { type Flower, TAG_STYLE, CATS } from '../data/flowersData';
+import ImageSlider from './ImageSlider';
 import { catOf } from '../utils/functions';
 
 interface Props {
@@ -19,7 +20,9 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
         <span className="fe-topbar-title">{flower.name}</span>
       </div>
       <div className="fe-detail-scroll">
-        <div className="fe-detail-hero">{flower.e}</div>
+        <div className="fe-detail-hero">
+          <ImageSlider images={flower.images} alt={flower.name} />
+        </div>
         <div className="fe-detail-bubble">
           <div className="fe-detail-name">{flower.name}</div>
           <div className="fe-detail-latin">{flower.latin}</div>

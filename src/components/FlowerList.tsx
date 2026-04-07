@@ -1,5 +1,6 @@
 import React from 'react';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
+import ImageSlider from './ImageSlider';
 
 interface Props {
   searchQuery: string;
@@ -87,7 +88,9 @@ const FlowerList: React.FC<Props> = ({
               className="fe-fcard"
               onClick={() => handleShowDetail(flower)}
             >
-              <div className="fe-fcard-img">{flower.e}</div>
+              <div className="fe-fcard-img">
+                <ImageSlider images={flower.images} alt={flower.name} small />
+              </div>
               <div className="fe-fcard-tab">{flower.name}</div>
             </div>
           ))
