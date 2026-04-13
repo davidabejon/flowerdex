@@ -1,8 +1,5 @@
 import React from 'react';
 import UploadPanel from './UploadPanel';
-import UploadedPhotos from './UploadedPhotos';
-
-import { useState } from 'react';
 
 interface Props {
   onBack: () => void;
@@ -10,18 +7,19 @@ interface Props {
 }
 
 const UploadView: React.FC<Props> = ({ onBack, onUploaded }) => {
-  const [refreshKey, setRefreshKey] = useState(0);
   return (
-    <div style={{ padding: 12 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}> 
-        <button onClick={onBack} style={{ padding: '6px 10px' }}>← Volver</button>
-        <h3 style={{ margin: 0 }}>Subir nueva flor</h3>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div className="fe-topbar">
+        <button className="fe-topbar-back" onClick={onBack}>←</button>
+        <span className="fe-topbar-title">Subir nueva flor</span>
       </div>
-      <div style={{ marginTop: 12 }}>
-        <UploadPanel onUploaded={() => { setRefreshKey((k) => k + 1); if (onUploaded) onUploaded(); }} />
-      </div>
-      <div style={{ marginTop: 18 }}>
-        <UploadedPhotos refreshSignal={refreshKey} onChange={() => { setRefreshKey(k => k + 1); if (onUploaded) onUploaded(); }} />
+
+      <div className="fe-detail-scroll">
+        <div style={{ padding: 12 }}>
+          <div className="fe-ac-panel">
+            <UploadPanel onUploaded={() => { if (onUploaded) onUploaded(); }} />
+          </div>
+        </div>
       </div>
     </div>
   );

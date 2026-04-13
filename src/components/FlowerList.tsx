@@ -1,7 +1,6 @@
 import React from 'react';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
-import UploadView from './UploadView';
 import { useState } from 'react';
 
 interface Props {
@@ -14,6 +13,7 @@ interface Props {
   filteredFlowers: Flower[];
   handleShowDetail: (f: Flower) => void;
   onReloadPhotos?: () => void;
+  onOpenUpload?: () => void;
 }
 
 const FlowerList: React.FC<Props> = ({
@@ -26,8 +26,9 @@ const FlowerList: React.FC<Props> = ({
   filteredFlowers,
   handleShowDetail,
   onReloadPhotos,
+  onOpenUpload
 }) => {
-  const [showUpload, setShowUpload] = useState(false);
+  // showUpload moved to parent via onOpenUpload
   return (
     <>
       <div className="fe-topbar">
@@ -53,7 +54,7 @@ const FlowerList: React.FC<Props> = ({
             <span>🏷️</span>
             <span>{tagsOpen ? 'Ocultar etiquetas' : 'Filtrar por etiquetas'}</span>
           </button>
-          <button className="fe-filter-btn" onClick={() => setShowUpload(true)}>
+          <button className="fe-filter-btn" onClick={() => onOpenUpload && onOpenUpload()}>
             <span>📸</span>
             <span>Subir flor</span>
           </button>
@@ -86,33 +87,28 @@ const FlowerList: React.FC<Props> = ({
       <div className="fe-results-label">
         {filteredFlowers.length === 0 ? '' : `${filteredFlowers.length} resultado${filteredFlowers.length !== 1 ? 's' : ''}`}
       </div>
-      {showUpload ? (
-        <UploadView onBack={() => { setShowUpload(false); if (onReloadPhotos) onReloadPhotos(); }} onUploaded={() => { if (onReloadPhotos) onReloadPhotos(); }} />
-      ) : (
-        <>
-          <div className="fe-flower-grid">
-            {filteredFlowers.length === 0 ? (
-              <div className="fe-empty">
-                <span>🌱</span>
-                <div>No se encontraron flores</div>
-              </div>
-            ) : (
-              filteredFlowers.map((flower) => (
-                <div
-                  key={flower.id}
-                  className="fe-fcard"
-                  onClick={() => handleShowDetail(flower)}
-                >
-                  <div className="fe-fcard-img">
-                    <ImageSlider images={flower.images} alt={flower.name} small />
-                  </div>
-                  <div className="fe-fcard-tab">{flower.name}</div>
-                </div>
-              ))
-            )}
+
+      <div className="fe-flower-grid">
+        {filteredFlowers.length === 0 ? (
+          <div className="fe-empty">
+            <span>🌱</span>
+            <div>No se encontraron flores</div>
           </div>
-        </>
-      )}
+        ) : (
+          filteredFlowers.map((flower) => (
+            <div
+              key={flower.id}
+              className="fe-fcard"
+              onClick={() => handleShowDetail(flower)}
+            >
+              <div className="fe-fcard-img">
+                <ImageSlider images={flower.images} alt={flower.name} small />
+              </div>
+              <div className="fe-fcard-tab">{flower.name}</div>
+            </div>
+          ))
+        )}
+      </div>
 
       <div className="fe-ac-footer">
         <div className="fe-ac-btn-hint">

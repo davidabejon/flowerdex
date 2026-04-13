@@ -1,6 +1,7 @@
 // FlowerEncyclopedia.tsx
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import FlowerList from '../components/FlowerList';
+import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 
@@ -13,6 +14,7 @@ export const FlowerEncyclopedia: React.FC = () => {
   const [tagsOpen, setTagsOpen] = useState(false);
   const [currentFlower, setCurrentFlower] = useState<Flower | null>(null);
   const [flowers, setFlowers] = useState<Flower[]>([]);
+  const [uploadMode, setUploadMode] = useState(false);
 
   const loadFlowers = useCallback(async () => {
     try {
@@ -73,13 +75,14 @@ export const FlowerEncyclopedia: React.FC = () => {
     setCurrentFlower(null);
   }, []);
 
-
   return (
     <>
       <div className="fe-container">
         <div className="fe-screen">
           {currentFlower ? (
             <FlowerDetail flower={currentFlower} onBack={handleShowList} applyTag={applyTag} />
+          ) : uploadMode ? (
+            <UploadView onBack={() => { setUploadMode(false); loadFlowers(); }} onUploaded={() => { loadFlowers(); setUploadMode(false); }} />
           ) : (
             <FlowerList
               searchQuery={searchQuery}
@@ -91,6 +94,7 @@ export const FlowerEncyclopedia: React.FC = () => {
               filteredFlowers={filteredFlowers}
               handleShowDetail={handleShowDetail}
               onReloadPhotos={loadFlowers}
+              onOpenUpload={() => setUploadMode(true)}
             />
           )}
         </div>
