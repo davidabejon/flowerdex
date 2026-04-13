@@ -1,16 +1,30 @@
-Backend para Flowerdex (FastAPI)
+# Flowerdex Backend
 
-Rutas principales:
-- `POST /upload` : sube una foto, identifica especie y guarda en DB.
-- `GET /photos` : lista fotos.
-- `GET /photos/{id}` : detalle.
+Express + SQLite backend for uploading flower photos, identifying species, and enriching with botanical APIs.
 
-Configurar variables de entorno en `.env` (ver `.env.example`).
+Setup
 
-Instalación:
+1. Install dependencies
+
 ```bash
-python -m venv .venv
-.venv\\Scripts\\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+cd backend
+npm install
 ```
+
+2. Copy `.env.example` to `.env` and add any API keys you have (PlantNet, Perenual, Trefle, Garden API).
+
+3. Run
+
+```bash
+npm run dev
+```
+
+Endpoints
+
+- `POST /upload` - multipart form with field `photo`. Returns saved DB record with identification/enrichment metadata.
+- `GET /photos` - list saved photos
+- `GET /photos/:id` - get a saved photo record
+
+Notes
+
+- The identification service uses PlantNet when `PLANTNET_API_KEY` is set. Adjust `services/identify.js` and `services/enrich.js` to match exact provider requirements or to add other providers.

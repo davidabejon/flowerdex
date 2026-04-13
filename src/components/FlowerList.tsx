@@ -1,6 +1,8 @@
 import React from 'react';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
+import UploadView from './UploadView';
+import { useState } from 'react';
 
 interface Props {
   searchQuery: string;
@@ -11,6 +13,7 @@ interface Props {
   setTagsOpen: (v: boolean) => void;
   filteredFlowers: Flower[];
   handleShowDetail: (f: Flower) => void;
+  onReloadPhotos?: () => void;
 }
 
 const FlowerList: React.FC<Props> = ({
@@ -22,7 +25,9 @@ const FlowerList: React.FC<Props> = ({
   setTagsOpen,
   filteredFlowers,
   handleShowDetail,
+  onReloadPhotos,
 }) => {
+  const [showUpload, setShowUpload] = useState(false);
   return (
     <>
       <div className="fe-topbar">
@@ -40,13 +45,19 @@ const FlowerList: React.FC<Props> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <button
-          className="fe-filter-btn"
-          onClick={() => setTagsOpen(!tagsOpen)}
-        >
-          <span>🏷️</span>
-          <span>{tagsOpen ? 'Ocultar etiquetas' : 'Filtrar por etiquetas'}</span>
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            className="fe-filter-btn"
+            onClick={() => setTagsOpen(!tagsOpen)}
+          >
+            <span>🏷️</span>
+            <span>{tagsOpen ? 'Ocultar etiquetas' : 'Filtrar por etiquetas'}</span>
+          </button>
+          <button className="fe-filter-btn" onClick={() => setShowUpload(true)}>
+            <span>📸</span>
+            <span>Subir flor</span>
+          </button>
+        </div>
         {tagsOpen && (
           <div className="fe-tags-area open">
             {Object.entries(CATS).map(([catKey, cat]) => (
@@ -75,27 +86,33 @@ const FlowerList: React.FC<Props> = ({
       <div className="fe-results-label">
         {filteredFlowers.length === 0 ? '' : `${filteredFlowers.length} resultado${filteredFlowers.length !== 1 ? 's' : ''}`}
       </div>
-      <div className="fe-flower-grid">
-        {filteredFlowers.length === 0 ? (
-          <div className="fe-empty">
-            <span>🌱</span>
-            <div>No se encontraron flores</div>
-          </div>
-        ) : (
-          filteredFlowers.map((flower) => (
-            <div
-              key={flower.id}
-              className="fe-fcard"
-              onClick={() => handleShowDetail(flower)}
-            >
-              <div className="fe-fcard-img">
-                <ImageSlider images={flower.images} alt={flower.name} small />
+      {showUpload ? (
+        <UploadView onBack={() => { setShowUpload(false); if (onReloadPhotos) onReloadPhotos(); }} onUploaded={() => { if (onReloadPhotos) onReloadPhotos(); }} />
+      ) : (
+        <>
+          <div className="fe-flower-grid">
+            {filteredFlowers.length === 0 ? (
+              <div className="fe-empty">
+                <span>🌱</span>
+                <div>No se encontraron flores</div>
               </div>
-              <div className="fe-fcard-tab">{flower.name}</div>
-            </div>
-          ))
-        )}
-      </div>
+            ) : (
+              filteredFlowers.map((flower) => (
+                <div
+                  key={flower.id}
+                  className="fe-fcard"
+                  onClick={() => handleShowDetail(flower)}
+                >
+                  <div className="fe-fcard-img">
+                    <ImageSlider images={flower.images} alt={flower.name} small />
+                  </div>
+                  <div className="fe-fcard-tab">{flower.name}</div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
 
       <div className="fe-ac-footer">
         <div className="fe-ac-btn-hint">

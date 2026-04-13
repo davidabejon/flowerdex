@@ -1,9 +1,10 @@
 // FlowerEncyclopedia.tsx
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import FlowerList from '../components/FlowerList';
 import FlowerDetail from '../components/FlowerDetail';
-import { type Flower, CATS, TAG_STYLE, FLOWERS } from '../data/flowersData';
-import { catOf } from '../utils/functions';
+import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
+
+const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
 
 // ─── COMPONENTS ───
 export const FlowerEncyclopedia: React.FC = () => {
@@ -11,15 +12,37 @@ export const FlowerEncyclopedia: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [tagsOpen, setTagsOpen] = useState(false);
   const [currentFlower, setCurrentFlower] = useState<Flower | null>(null);
+  const [flowers, setFlowers] = useState<Flower[]>([]);
+
+  const loadFlowers = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/photos`);
+      const data = await res.json();
+      const mapped: Flower[] = data.map((p: any) => ({
+        id: p.id,
+        name: p.species || 'Sin identificar',
+        latin: (p.metadata && p.metadata.enrichment && p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].scientific_name) || '',
+        e: '🌸',
+        images: [((import.meta.env.VITE_API_URL as string) || 'http://localhost:4000') + '/uploads/' + p.filename],
+        desc: (p.metadata && p.metadata.enrichment && p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].common_name) || '',
+        tags: [] as string[],
+      }));
+      setFlowers(mapped);
+    } catch (e) {
+      console.error('Failed to load photos', e);
+    }
+  }, []);
+
+  useEffect(() => { loadFlowers(); }, [loadFlowers]);
 
   const filteredFlowers = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
-    return FLOWERS.filter((f) => {
+    return flowers.filter((f) => {
       const nOk = !q || f.name.toLowerCase().includes(q) || f.latin.toLowerCase().includes(q);
       const tOk = selectedTags.size === 0 || Array.from(selectedTags).every((t) => f.tags.includes(t));
       return nOk && tOk;
     });
-  }, [searchQuery, selectedTags]);
+  }, [searchQuery, selectedTags, flowers]);
 
   const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) => {
@@ -67,6 +90,7 @@ export const FlowerEncyclopedia: React.FC = () => {
               setTagsOpen={setTagsOpen}
               filteredFlowers={filteredFlowers}
               handleShowDetail={handleShowDetail}
+              onReloadPhotos={loadFlowers}
             />
           )}
         </div>
