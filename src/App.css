@@ -40,8 +40,6 @@
   min-height: 100vh;
   flex: 1;
   position: relative;
-  /* reserve space so sticky/fixed footer doesn't cover content */
-  padding-bottom: 72px;
 }
 
 .fe-topbar {
