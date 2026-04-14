@@ -252,6 +252,20 @@
   position: relative;
 }
 
+.fe-mis-badge {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: #fff1f2;
+  color: #b00020;
+  padding: 6px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(176,0,32,0.12);
+  box-shadow: 0 4px 10px rgba(176,0,32,0.06);
+}
+
 .fe-fcard-img::before {
   content: '';
   position: absolute;

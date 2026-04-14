@@ -11,9 +11,22 @@ db.serialize(() => {
       species TEXT,
       confidence REAL,
       metadata TEXT,
+      overrides TEXT,
+      misclassified INTEGER DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  // Ensure older DBs have the new columns
+  db.all("PRAGMA table_info('photos')", (err, cols) => {
+    if (err) return;
+    const names = (cols || []).map(c => c.name);
+    if (!names.includes('overrides')) {
+      db.run("ALTER TABLE photos ADD COLUMN overrides TEXT");
+    }
+    if (!names.includes('misclassified')) {
+      db.run("ALTER TABLE photos ADD COLUMN misclassified INTEGER DEFAULT 0");
+    }
+  });
 });
 
 function run(sql, params = []) {

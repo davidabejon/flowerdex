@@ -32,6 +32,8 @@ export const FlowerEncyclopedia: React.FC = () => {
         images: [((import.meta.env.VITE_API_URL as string) || 'http://localhost:4000') + '/uploads/' + (p.filename || '')],
         desc: '',
         tags: [],
+        // keep misc flag on the mapped object so UI can show badge
+        misclassified: !!p.misclassified,
       }));
       // update pagination meta when backend returns it
       if (data && typeof data.page === 'number') {

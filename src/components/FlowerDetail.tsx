@@ -17,6 +17,15 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [mainImgLoaded, setMainImgLoaded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [misloading, setMisloading] = useState(false);
+
+  const [formSpecies, setFormSpecies] = useState('');
+  const [formCommonEs, setFormCommonEs] = useState('');
+  const [formCommonEn, setFormCommonEn] = useState('');
+  const [formFamily, setFormFamily] = useState('');
+  const [formGenus, setFormGenus] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -38,6 +47,83 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     return () => { cancelled = true; };
   }, [flower?.id]);
 
+  // populate form when details load
+  useEffect(() => {
+    if (!details) return;
+    setFormSpecies(details.photo?.species || '');
+    const trefle = details.enrichment?.trefle || {};
+    const commons = trefle.common_names || {};
+    setFormCommonEs(commons.es || '');
+    setFormCommonEn(commons.en || '');
+    setFormFamily(trefle.family || details.enrichment?.family || '');
+    setFormGenus(trefle.genus || details.enrichment?.genus || '');
+  }, [details]);
+
+  const toggleMisclassified = async (value?: boolean) => {
+    if (!details?.photo?.id) return;
+    setMisloading(true);
+    try {
+      const res = await fetch(`${API}/photos/${details.photo.id}/misclassified`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ misclassified: typeof value === 'boolean' ? value : !details.photo.misclassified })
+      });
+      if (!res.ok) throw new Error('Status ' + res.status);
+      await refreshDetails();
+    } catch (e: any) {
+      console.error(e);
+      setErr(e?.message || String(e));
+    } finally {
+      setMisloading(false);
+    }
+  };
+
+  async function refreshDetails() {
+    if (!flower?.id) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/photos/${flower.id}/details`);
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      const j = await res.json();
+      setDetails(j);
+    } catch (e: any) {
+      setErr(e?.message || String(e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const saveOverrides = async () => {
+    if (!details?.photo?.id) return;
+    setSaving(true);
+    const overrides: any = {};
+    if (formSpecies) overrides.species = formSpecies;
+    const trefle: any = {};
+    const common: any = {};
+    if (formCommonEs) common.es = formCommonEs;
+    if (formCommonEn) common.en = formCommonEn;
+    if (Object.keys(common).length) trefle.common_names = common;
+    if (formFamily) trefle.family = formFamily;
+    if (formGenus) trefle.genus = formGenus;
+    if (Object.keys(trefle).length) overrides.enrichment = { trefle };
+
+    try {
+      const res = await fetch(`${API}/photos/${details.photo.id}/overrides`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(overrides)
+      });
+      if (!res.ok) throw new Error('Status ' + res.status);
+      await refreshDetails();
+      setEditing(false);
+    } catch (e: any) {
+      console.error(e);
+      setErr(e?.message || String(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <>
       <div className="fe-topbar">
@@ -52,6 +138,9 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
         </div>
         <div className="fe-detail-bubble">
           <div className="fe-detail-name">{flower.name}</div>
+          {details?.photo?.misclassified && (
+            <div style={{ color: '#b00020', fontWeight: 800, marginTop: 6 }}>Mal catalogada — revisar</div>
+          )}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'center', marginTop: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 800 }}>ES</span>
             <div className="fe-detail-name" style={{ margin: 0, fontSize: 16 }}>{details?.enrichment?.trefle?.common_names?.es || '—'}</div>
@@ -111,6 +200,36 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
                 </div>
               ) : (
                 <div style={{ fontSize: 13, color: '#444', marginBottom: 8 }}>Imagen: —</div>
+              )}
+              <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', justifyContent: 'center' }}>
+                <button className="fe-pag-btn" onClick={() => setEditing(!editing)}>{editing ? 'Cancelar' : 'Editar'}</button>
+                <button className="fe-pag-btn" onClick={() => toggleMisclassified()} disabled={misloading}>{details.photo?.misclassified ? 'Desmarcar mal catalogada' : 'Marcar mal catalogada'}</button>
+              </div>
+
+              {editing && (
+                <div style={{ marginTop: 12, padding: 12, border: '1px solid var(--sand2)', borderRadius: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <label style={{ fontSize: 12, fontWeight: 700 }}>Especie (binomial)</label>
+                    <input value={formSpecies} onChange={e => setFormSpecies(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                    <label style={{ fontSize: 12, fontWeight: 700 }}>Nombres comunes (ES)</label>
+                    <input value={formCommonEs} onChange={e => setFormCommonEs(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                    <label style={{ fontSize: 12, fontWeight: 700 }}>Nombres comunes (EN)</label>
+                    <input value={formCommonEn} onChange={e => setFormCommonEn(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                    <label style={{ fontSize: 12, fontWeight: 700 }}>Familia</label>
+                    <input value={formFamily} onChange={e => setFormFamily(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                    <label style={{ fontSize: 12, fontWeight: 700 }}>Género</label>
+                    <input value={formGenus} onChange={e => setFormGenus(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 6 }}>
+                      <button className="fe-pag-btn" onClick={() => setEditing(false)} disabled={saving}>Cancelar</button>
+                      <button className="fe-pag-btn" onClick={() => saveOverrides()} disabled={saving}>{saving ? 'Guardando…' : 'Guardar cambios'}</button>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           ) : (

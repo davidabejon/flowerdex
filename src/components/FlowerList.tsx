@@ -109,6 +109,9 @@ const FlowerList: React.FC<Props> = ({
             >
               <div className="fe-fcard-img">
                 <ImageSlider images={flower.images} alt={flower.name} small />
+                {(flower as any).misclassified && (
+                  <div className="fe-mis-badge">Mal catalogada</div>
+                )}
               </div>
               <div className="fe-fcard-tab">{flower.name}</div>
             </div>
