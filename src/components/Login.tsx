@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { saveToken } from '../utils/api';
 
-const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
+const API = (import.meta.env.VITE_API_URL as string) || '/api';
 
 interface Props { onSuccess?: () => void; onClose?: () => void; bgImage?: string }
 
