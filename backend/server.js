@@ -61,10 +61,20 @@ app.get('/photos', async (req, res) => {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const perPage = Math.min(100, Math.max(1, parseInt(req.query.per_page, 10) || 20));
     const offset = (page - 1) * perPage;
+    const q = (req.query.q || '').toString().trim();
 
-    const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos');
-    const total = totalRow ? totalRow.cnt || 0 : 0;
-    const rows = await db.all('SELECT id, filename, species, overrides, misclassified FROM photos ORDER BY created_at DESC LIMIT ? OFFSET ?', [perPage, offset]);
+    let total = 0;
+    let rows = [];
+    if (q) {
+      const like = `%${q.replace(/%/g, '')}%`;
+      const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos WHERE species LIKE ? OR metadata LIKE ?', [like, like]);
+      total = totalRow ? totalRow.cnt || 0 : 0;
+      rows = await db.all('SELECT id, filename, species, overrides, misclassified FROM photos WHERE species LIKE ? OR metadata LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?', [like, like, perPage, offset]);
+    } else {
+      const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos');
+      total = totalRow ? totalRow.cnt || 0 : 0;
+      rows = await db.all('SELECT id, filename, species, overrides, misclassified FROM photos ORDER BY created_at DESC LIMIT ? OFFSET ?', [perPage, offset]);
+    }
 
     // Apply simple overrides for the list view (species)
     const photos = rows.map(r => {

@@ -10,18 +10,19 @@ const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
 // ─── COMPONENTS ───
 export const FlowerEncyclopedia: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [inputQuery, setInputQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [tagsOpen, setTagsOpen] = useState(false);
   const [currentFlower, setCurrentFlower] = useState<Flower | null>(null);
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const [uploadMode, setUploadMode] = useState(false);
   const [page, setPage] = useState(1);
-  const [perPage] = useState(20);
+  const [perPage] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
 
-  const loadFlowers = useCallback(async (p: number = 1) => {
+  const loadFlowers = useCallback(async (p: number = 1, q: string = '') => {
     try {
-      const res = await fetch(`${API}/photos?page=${p}&per_page=${perPage}`);
+      const res = await fetch(`${API}/photos?page=${p}&per_page=${perPage}&q=${encodeURIComponent(q || '')}`);
       const data = await res.json();
       const list = Array.isArray(data) ? data : (data && data.photos) || [];
       const mapped: Flower[] = list.map((p: any, idx: number) => ({
@@ -47,18 +48,26 @@ export const FlowerEncyclopedia: React.FC = () => {
     } catch (e) {
       console.error('Failed to load photos', e);
     }
-  }, []);
+  }, [perPage]);
 
-  useEffect(() => { loadFlowers(page); }, [loadFlowers, page]);
+  // reload when page or searchQuery change
+  useEffect(() => { loadFlowers(page, searchQuery); }, [page, searchQuery, loadFlowers]);
+
+  // debounce inputQuery -> searchQuery (server-side) and reset to page 1
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setPage(1);
+      setSearchQuery(inputQuery.trim());
+    }, 300);
+    return () => clearTimeout(t);
+  }, [inputQuery]);
 
   const filteredFlowers = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
-    return flowers.filter((f) => {
-      const nOk = !q || f.name.toLowerCase().includes(q) || f.latin.toLowerCase().includes(q);
-      const tOk = selectedTags.size === 0 || Array.from(selectedTags).every((t) => f.tags.includes(t));
-      return nOk && tOk;
-    });
-  }, [searchQuery, selectedTags, flowers]);
+    // If a server-side search is active, `flowers` already contains filtered results.
+    // Only apply tag filtering client-side.
+    const tOk = (f: Flower) => selectedTags.size === 0 || Array.from(selectedTags).every((t) => f.tags.includes(t));
+    return flowers.filter(f => tOk(f));
+  }, [selectedTags, flowers]);
 
   const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) => {
@@ -99,8 +108,8 @@ export const FlowerEncyclopedia: React.FC = () => {
             <UploadView onBack={() => { setUploadMode(false); loadFlowers(); }} onUploaded={() => { loadFlowers(); setUploadMode(false); }} />
           ) : (
             <FlowerList
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
+              searchQuery={inputQuery}
+              setSearchQuery={setInputQuery}
               selectedTags={selectedTags}
               toggleTag={toggleTag}
               tagsOpen={tagsOpen}
