@@ -14,6 +14,9 @@ interface Props {
   handleShowDetail: (f: Flower) => void;
   onReloadPhotos?: () => void;
   onOpenUpload?: () => void;
+  page?: number;
+  totalPages?: number;
+  onPageChange?: (p: number) => void;
 }
 
 const FlowerList: React.FC<Props> = ({
@@ -26,7 +29,10 @@ const FlowerList: React.FC<Props> = ({
   filteredFlowers,
   handleShowDetail,
   onReloadPhotos,
-  onOpenUpload
+  onOpenUpload,
+  page,
+  totalPages,
+  onPageChange
 }) => {
   // showUpload moved to parent via onOpenUpload
   return (
@@ -108,6 +114,12 @@ const FlowerList: React.FC<Props> = ({
             </div>
           ))
         )}
+      </div>
+
+      <div className="fe-pagination">
+        <button className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.max(1, (page||1) - 1))} disabled={!(onPageChange && page && page > 1)}>Anterior</button>
+        <div className="fe-pagination-info">Página {page || 1} / {totalPages || 1}</div>
+        <button className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.min(totalPages || 1, (page||1) + 1))} disabled={!(onPageChange && page && totalPages && page < totalPages)}>Siguiente</button>
       </div>
 
       <div className="fe-ac-footer">

@@ -57,8 +57,22 @@ app.post('/upload', upload.single('photo'), async (req, res) => {
 
 app.get('/photos', async (req, res) => {
   try {
-    const rows = await db.all('SELECT * FROM photos ORDER BY created_at DESC');
-    res.json(rows.map(r => ({ ...r, metadata: r.metadata ? JSON.parse(r.metadata) : null })));
+    // pagination: ?page=1&per_page=20
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const perPage = Math.min(100, Math.max(1, parseInt(req.query.per_page, 10) || 20));
+    const offset = (page - 1) * perPage;
+
+    const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos');
+    const total = totalRow ? totalRow.cnt || 0 : 0;
+    const rows = await db.all('SELECT filename, species FROM photos ORDER BY created_at DESC LIMIT ? OFFSET ?', [perPage, offset]);
+
+    res.json({
+      photos: rows.map(r => ({ filename: r.filename, species: r.species })),
+      page,
+      per_page: perPage,
+      total,
+      total_pages: Math.ceil(total / perPage)
+    });
   } catch (e) {
     res.status(500).json({ error: 'Internal server error' });
   }

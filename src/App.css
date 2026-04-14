@@ -401,6 +401,37 @@
   box-shadow: 0 -6px 18px rgba(0,0,0,0.06);
 }
 
+.fe-pagination {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px 16px;
+  margin: 0 12px 12px;
+}
+
+.fe-pag-btn {
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: var(--sand);
+  border: 2.5px solid var(--sand2);
+  font-family: var(--font);
+  font-weight: 800;
+  color: var(--brown-dark);
+  cursor: pointer;
+}
+
+.fe-pag-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.fe-pagination-info {
+  font-weight: 800;
+  color: var(--brown);
+}
+
 .fe-ac-btn-hint {
   display: flex;
   align-items: center;

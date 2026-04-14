@@ -15,29 +15,39 @@ export const FlowerEncyclopedia: React.FC = () => {
   const [currentFlower, setCurrentFlower] = useState<Flower | null>(null);
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const [uploadMode, setUploadMode] = useState(false);
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const loadFlowers = useCallback(async () => {
+  const loadFlowers = useCallback(async (p: number = 1) => {
     try {
-      const res = await fetch(`${API}/photos`);
+      const res = await fetch(`${API}/photos?page=${p}&per_page=${perPage}`);
       const data = await res.json();
-      const mapped: Flower[] = data.map((p: any) => ({
-        id: p.id,
+      const list = Array.isArray(data) ? data : (data && data.photos) || [];
+      const mapped: Flower[] = list.map((p: any, idx: number) => ({
+        id: p.id || idx,
         name: p.species || 'Sin identificar',
-        latin:
-          (p.metadata && p.metadata.enrichment && p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].scientific_name) ||
-          '',
+        latin: '',
         e: '🌸',
-        images: [((import.meta.env.VITE_API_URL as string) || 'http://localhost:4000') + '/uploads/' + p.filename],
-        desc: (p.metadata && p.metadata.enrichment && (p.metadata.enrichment.description || (p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].common_name))) || '',
-        tags: (p.metadata && p.metadata.enrichment && p.metadata.enrichment.tags) || [],
+        images: [((import.meta.env.VITE_API_URL as string) || 'http://localhost:4000') + '/uploads/' + (p.filename || '')],
+        desc: '',
+        tags: [],
       }));
+      // update pagination meta when backend returns it
+      if (data && typeof data.page === 'number') {
+        setPage(data.page || p);
+        setTotalPages(data.total_pages || 1);
+      } else {
+        setPage(p);
+        setTotalPages(1);
+      }
       setFlowers(mapped);
     } catch (e) {
       console.error('Failed to load photos', e);
     }
   }, []);
 
-  useEffect(() => { loadFlowers(); }, [loadFlowers]);
+  useEffect(() => { loadFlowers(page); }, [loadFlowers, page]);
 
   const filteredFlowers = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
@@ -95,8 +105,11 @@ export const FlowerEncyclopedia: React.FC = () => {
               setTagsOpen={setTagsOpen}
               filteredFlowers={filteredFlowers}
               handleShowDetail={handleShowDetail}
-              onReloadPhotos={loadFlowers}
+              onReloadPhotos={() => loadFlowers(page)}
               onOpenUpload={() => setUploadMode(true)}
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(p) => setPage(p)}
             />
           )}
         </div>
