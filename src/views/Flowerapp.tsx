@@ -23,11 +23,13 @@ export const FlowerEncyclopedia: React.FC = () => {
       const mapped: Flower[] = data.map((p: any) => ({
         id: p.id,
         name: p.species || 'Sin identificar',
-        latin: (p.metadata && p.metadata.enrichment && p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].scientific_name) || '',
+        latin:
+          (p.metadata && p.metadata.enrichment && p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].scientific_name) ||
+          '',
         e: '🌸',
         images: [((import.meta.env.VITE_API_URL as string) || 'http://localhost:4000') + '/uploads/' + p.filename],
-        desc: (p.metadata && p.metadata.enrichment && p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].common_name) || '',
-        tags: [] as string[],
+        desc: (p.metadata && p.metadata.enrichment && (p.metadata.enrichment.description || (p.metadata.enrichment.trefle && p.metadata.enrichment.trefle.data && p.metadata.enrichment.trefle.data[0] && p.metadata.enrichment.trefle.data[0].common_name))) || '',
+        tags: (p.metadata && p.metadata.enrichment && p.metadata.enrichment.tags) || [],
       }));
       setFlowers(mapped);
     } catch (e) {
