@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { saveToken } from '../utils/api';
-
-const API = (import.meta.env.VITE_API_URL as string) || '/api';
+import { API_BASE, saveToken } from '../utils/api';
 
 interface Props { onSuccess?: () => void; onClose?: () => void; bgImage?: string }
 
@@ -20,7 +18,7 @@ const Login: React.FC<Props> = ({ onSuccess, onClose, bgImage }) => {
     setErr(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/login`, {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: user, password: pass })

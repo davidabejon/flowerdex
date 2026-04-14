@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiFetch } from '../utils/api';
+import { API_BASE, apiFetch } from '../utils/api';
 
 type Photo = {
   id: number;
@@ -8,8 +8,6 @@ type Photo = {
   confidence: number | null;
   metadata: any;
 };
-
-const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
 
 interface Props { refreshSignal?: number; onChange?: () => void }
 
@@ -55,7 +53,7 @@ const UploadedPhotos: React.FC<Props> = ({ refreshSignal, onChange }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
         {photos.map((p) => (
           <div key={p.id} style={{ border: '1px solid #eee', padding: 6, borderRadius: 6, position: 'relative' }}>
-            <img src={`${API}/uploads/${p.filename}`} alt={p.species || 'foto'} style={{ width: '100%', height: 100, objectFit: 'cover' }} />
+            <img src={`${API_BASE}/uploads/${p.filename}`} alt={p.species || 'foto'} style={{ width: '100%', height: 100, objectFit: 'cover' }} />
             <div style={{ fontSize: 12, marginTop: 6 }}>{p.species || 'Sin identificar'}</div>
             <button onClick={() => deletePhoto(p.id)} style={{ position: 'absolute', right: 6, top: 6, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: 4, padding: '2px 6px', cursor: 'pointer' }}>Borrar</button>
           </div>

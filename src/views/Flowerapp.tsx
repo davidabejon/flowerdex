@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import FlowerList from '../components/FlowerList';
 import Login from '../components/Login';
-import { apiFetch } from '../utils/api';
+import { API_BASE, apiFetch } from '../utils/api';
 import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
 import { type Flower } from '../data/flowersData';
@@ -40,7 +40,7 @@ export const FlowerEncyclopedia: React.FC = () => {
         name: p.species || 'Sin identificar',
         latin: '',
         e: '🌸',
-        images: [((import.meta.env.VITE_API_URL as string) || 'http://localhost:4000') + '/uploads/' + (p.filename || '')],
+        images: [(API_BASE) + '/uploads/' + (p.filename || '')],
         desc: '',
         tags: [],
         // keep misc flag on the mapped object so UI can show badge
