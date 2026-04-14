@@ -41,7 +41,7 @@ const UploadPanel: React.FC<Props> = ({ onUploaded }) => {
   return (
     <div style={{ padding: 12, borderTop: '1px solid #eee' }}>
       <div style={{ marginBottom: 8 }}><strong>Sube una foto</strong></div>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
         <input
           id="upload-input"
           ref={(el) => { inputRef.current = el; }}
