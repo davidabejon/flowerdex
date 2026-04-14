@@ -16,6 +16,15 @@ db.serialize(() => {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  // users table for authentication
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
   // Ensure older DBs have the new columns
   db.all("PRAGMA table_info('photos')", (err, cols) => {
     if (err) return;

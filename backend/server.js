@@ -6,6 +6,10 @@ const multer = require('multer');
 const { identifyImage } = require('./services/identify');
 const { enrichSpecies } = require('./services/enrich');
 const db = require('./db');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'please_change_this_secret';
 
 const app = express();
 // Simple CORS for development
@@ -33,6 +37,29 @@ const upload = multer({ storage });
 app.use(express.json());
 app.use('/uploads', express.static(UPLOAD_DIR));
 
+// Global auth guard: require auth for all API routes except /auth and /uploads and OPTIONS
+app.use((req, res, next) => {
+  const openPaths = ['/auth', '/uploads'];
+  if (req.method === 'OPTIONS') return next();
+  // allow any path that starts with an open path
+  for (const p of openPaths) {
+    if (req.path === p || req.path.startsWith(p + '/') || req.path.startsWith(p + '?')) return next();
+  }
+  // allow root or public info if needed (none)
+  // otherwise require auth
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ error: 'missing authorization' });
+  const parts = auth.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'invalid authorization' });
+  try {
+    const decoded = jwt.verify(parts[1], JWT_SECRET);
+    req.user = decoded;
+    return next();
+  } catch (e) {
+    return res.status(401).json({ error: 'invalid token' });
+  }
+});
+
 app.post('/upload', upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -54,6 +81,55 @@ app.post('/upload', upload.single('photo'), async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Authentication endpoints
+app.post('/auth/register', async (req, res) => {
+  try {
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ error: 'username and password required' });
+    const hash = bcrypt.hashSync(password, 10);
+    try {
+      const insert = await db.run('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hash]);
+      const user = await db.get('SELECT id, username, created_at FROM users WHERE id = ?', [insert.id]);
+      return res.json({ success: true, user });
+    } catch (e) {
+      return res.status(400).json({ error: 'username already exists' });
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ error: 'username and password required' });
+    const row = await db.get('SELECT * FROM users WHERE username = ?', [username]);
+    if (!row) return res.status(401).json({ error: 'invalid credentials' });
+    const ok = bcrypt.compareSync(password, row.password_hash);
+    if (!ok) return res.status(401).json({ error: 'invalid credentials' });
+    const token = jwt.sign({ id: row.id, username: row.username }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ success: true, token });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+function authRequired(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ error: 'missing authorization' });
+  const parts = auth.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'invalid authorization' });
+  try {
+    const decoded = jwt.verify(parts[1], JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (e) {
+    return res.status(401).json({ error: 'invalid token' });
+  }
+}
 
 app.get('/photos', async (req, res) => {
   try {
@@ -139,8 +215,8 @@ app.get('/photos/:id/details', async (req, res) => {
   }
 });
 
-// Mark/unmark photo as misclassified
-app.post('/photos/:id/misclassified', async (req, res) => {
+// Mark/unmark photo as misclassified (requires auth)
+app.post('/photos/:id/misclassified', authRequired, async (req, res) => {
   try {
     const id = req.params.id;
     const mis = !!req.body.misclassified;
@@ -155,8 +231,8 @@ app.post('/photos/:id/misclassified', async (req, res) => {
   }
 });
 
-// Save manual overrides for a photo (identification/enrichment/species)
-app.put('/photos/:id/overrides', async (req, res) => {
+// Save manual overrides for a photo (identification/enrichment/species) (requires auth)
+app.put('/photos/:id/overrides', authRequired, async (req, res) => {
   try {
     const id = req.params.id;
     const overrides = req.body || {};
@@ -171,7 +247,7 @@ app.put('/photos/:id/overrides', async (req, res) => {
   }
 });
 
-app.delete('/photos/:id', async (req, res) => {
+app.delete('/photos/:id', authRequired, async (req, res) => {
   try {
     const id = req.params.id;
     const row = await db.get('SELECT * FROM photos WHERE id = ?', [id]);

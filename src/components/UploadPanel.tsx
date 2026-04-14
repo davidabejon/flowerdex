@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../utils/api';
 
 const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
 
@@ -27,7 +28,7 @@ const UploadPanel: React.FC<Props> = ({ onUploaded }) => {
     try {
       const fd = new FormData();
       fd.append('photo', file);
-      const resp = await fetch(`${API}/upload`, { method: 'POST', body: fd });
+      const resp = await apiFetch(`/upload`, { method: 'POST', body: fd });
       if (!resp.ok) throw new Error(`Upload failed: ${resp.status}`);
       setFile(null);
       onUploaded();

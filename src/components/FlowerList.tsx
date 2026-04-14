@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
-import { useState } from 'react';
+import Login from './Login';
+import { saveToken } from '../utils/api';
 
 interface Props {
   searchQuery: string;
   setSearchQuery: (v: string) => void;
+  bgImage?: string;
   selectedTags: Set<string>;
   toggleTag: (tag: string) => void;
   tagsOpen: boolean;
@@ -32,15 +34,28 @@ const FlowerList: React.FC<Props> = ({
   onOpenUpload,
   page,
   totalPages,
-  onPageChange
+  onPageChange,
+  bgImage
 }) => {
-  // showUpload moved to parent via onOpenUpload
+  const [showLogin, setShowLogin] = useState(false);
+
   return (
     <>
       <div className="fe-topbar">
         <span className="fe-topbar-leaf">🌿</span>
         <span className="fe-topbar-title">Enciclopedia de flores</span>
+        <div style={{ marginLeft: 'auto' }}>
+          {localStorage.getItem('fd_token') ? (
+            <button className="fe-topbar-back" onClick={() => { saveToken(null); window.location.reload(); }}>Salir</button>
+          ) : (
+            <button className="fe-topbar-back" onClick={() => setShowLogin(true)}>Entrar</button>
+          )}
+        </div>
       </div>
+
+      {showLogin && (
+        <Login bgImage={bgImage} onSuccess={() => { setShowLogin(false); window.location.reload(); }} onClose={() => setShowLogin(false)} />
+      )}
 
       <div className="fe-ac-panel">
         <div className="fe-search-row">

@@ -1,6 +1,8 @@
 // FlowerEncyclopedia.tsx
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import FlowerList from '../components/FlowerList';
+import Login from '../components/Login';
+import { apiFetch } from '../utils/api';
 import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
@@ -11,6 +13,16 @@ const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
 export const FlowerEncyclopedia: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [inputQuery, setInputQuery] = useState('');
+  const [loggedIn, setLoggedIn] = useState<boolean>(() => !!localStorage.getItem('fd_token'));
+  const [bgImage, setBgImage] = useState<string>(() => {
+    try {
+      const day = new URL('../assets/bg_day.jpg', import.meta.url).href;
+      const night = new URL('../assets/bg_night.jpg', import.meta.url).href;
+      return Math.random() < 0.5 ? day : night;
+    } catch (e) {
+      return '';
+    }
+  });
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [tagsOpen, setTagsOpen] = useState(false);
   const [currentFlower, setCurrentFlower] = useState<Flower | null>(null);
@@ -22,7 +34,7 @@ export const FlowerEncyclopedia: React.FC = () => {
 
   const loadFlowers = useCallback(async (p: number = 1, q: string = '') => {
     try {
-      const res = await fetch(`${API}/photos?page=${p}&per_page=${perPage}&q=${encodeURIComponent(q || '')}`);
+      const res = await apiFetch(`/photos?page=${p}&per_page=${perPage}&q=${encodeURIComponent(q || '')}`);
       const data = await res.json();
       const list = Array.isArray(data) ? data : (data && data.photos) || [];
       const mapped: Flower[] = list.map((p: any, idx: number) => ({
@@ -52,6 +64,15 @@ export const FlowerEncyclopedia: React.FC = () => {
 
   // reload when page or searchQuery change
   useEffect(() => { loadFlowers(page, searchQuery); }, [page, searchQuery, loadFlowers]);
+
+  // listen for auth expiration events to show login
+  useEffect(() => {
+    const onExpired = () => {
+      setLoggedIn(false);
+    };
+    window.addEventListener('fd:auth:expired', onExpired as EventListener);
+    return () => { window.removeEventListener('fd:auth:expired', onExpired as EventListener); };
+  }, []);
 
   // debounce inputQuery -> searchQuery (server-side) and reset to page 1
   useEffect(() => {
@@ -110,6 +131,7 @@ export const FlowerEncyclopedia: React.FC = () => {
             <FlowerList
               searchQuery={inputQuery}
               setSearchQuery={setInputQuery}
+              bgImage={bgImage}
               selectedTags={selectedTags}
               toggleTag={toggleTag}
               tagsOpen={tagsOpen}
@@ -122,6 +144,9 @@ export const FlowerEncyclopedia: React.FC = () => {
               totalPages={totalPages}
               onPageChange={(p) => setPage(p)}
             />
+          )}
+          {!loggedIn && (
+            <Login bgImage={bgImage} onSuccess={() => { setLoggedIn(true); loadFlowers(1, searchQuery); }} onClose={() => {}} />
           )}
         </div>
       </div>

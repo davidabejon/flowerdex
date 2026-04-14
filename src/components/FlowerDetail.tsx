@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { type Flower, TAG_STYLE, CATS } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
 import { catOf } from '../utils/functions';
+import { apiFetch } from '../utils/api';
 import PART_TRANSLATIONS from '../utils/partTranslations';
 
 interface Props {
@@ -33,7 +34,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
       if (!flower?.id) return;
       setLoading(true);
       try {
-        const res = await fetch(`${API}/photos/${flower.id}/details`);
+        const res = await apiFetch(`/photos/${flower.id}/details`);
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const j = await res.json();
         if (!cancelled) setDetails(j);
@@ -63,9 +64,8 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     if (!details?.photo?.id) return;
     setMisloading(true);
     try {
-      const res = await fetch(`${API}/photos/${details.photo.id}/misclassified`, {
+      const res = await apiFetch(`/photos/${details.photo.id}/misclassified`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ misclassified: typeof value === 'boolean' ? value : !details.photo.misclassified })
       });
       if (!res.ok) throw new Error('Status ' + res.status);
@@ -82,7 +82,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     if (!flower?.id) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API}/photos/${flower.id}/details`);
+      const res = await apiFetch(`/photos/${flower.id}/details`);
       if (!res.ok) throw new Error(`Status ${res.status}`);
       const j = await res.json();
       setDetails(j);
@@ -108,12 +108,14 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     if (Object.keys(trefle).length) overrides.enrichment = { trefle };
 
     try {
-      const res = await fetch(`${API}/photos/${details.photo.id}/overrides`, {
+      const res = await apiFetch(`/photos/${details.photo.id}/overrides`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(overrides)
       });
-      if (!res.ok) throw new Error('Status ' + res.status);
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error('Status ' + res.status + ' ' + t);
+      }
       await refreshDetails();
       setEditing(false);
     } catch (e: any) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../utils/api';
 
 type Photo = {
   id: number;
@@ -19,9 +20,11 @@ const UploadedPhotos: React.FC<Props> = ({ refreshSignal, onChange }) => {
   const load = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`${API}/photos`);
+      const resp = await apiFetch(`/photos`);
+      if (!resp.ok) throw new Error('Failed to load');
       const data = await resp.json();
-      setPhotos(data);
+      const list = Array.isArray(data) ? data : (data && data.photos) || [];
+      setPhotos(list);
     } catch (e) {
       console.error(e);
     } finally { setLoading(false); }
@@ -32,7 +35,7 @@ const UploadedPhotos: React.FC<Props> = ({ refreshSignal, onChange }) => {
   const deletePhoto = async (id: number) => {
     if (!confirm('¿Borrar esta foto? Esta acción no se puede deshacer.')) return;
     try {
-      const resp = await fetch(`${API}/photos/${id}`, { method: 'DELETE' });
+      const resp = await apiFetch(`/photos/${id}`, { method: 'DELETE' });
       if (!resp.ok) throw new Error('Delete failed');
       // refresh list
       await load();
