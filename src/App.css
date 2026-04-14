@@ -369,6 +369,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .fe-detail-tags {
@@ -432,6 +433,39 @@
   color: var(--brown);
 }
 
+/* Trefle main image card to match Animal Crossing style */
+.fe-trefle-hero {
+  width: 100%;
+  max-height: 360px;
+  background: var(--sand);
+  border: 3px solid var(--outline);
+  border-radius: 14px;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fe-trefle-caption {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  background: rgba(255,255,255,0.92);
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--brown-text);
+  border: 1px solid var(--sand2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .fe-ac-btn-hint {
   display: flex;
   align-items: center;
@@ -459,4 +493,49 @@
 
 .fe-ac-btn-badge.teal {
   background: var(--teal);
+}
+
+/* Alternate detail bubble: playful Animal Crossing sticker variant */
+.fe-detail-bubble-alt {
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,246,237,0.96) 100%);
+  border: 3px dashed rgba(125,197,126,0.9);
+  border-radius: 18px;
+  margin: 12px;
+  padding: 14px;
+  position: relative;
+  box-shadow: 0 8px 18px rgba(79, 121, 84, 0.12), inset 0 -6px 12px rgba(255,255,255,0.6);
+}
+
+.fe-detail-bubble-alt::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 26px;
+  width: 44px;
+  height: 20px;
+  background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%);
+  border-radius: 8px;
+  transform: rotate(-6deg);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.fe-detail-bubble-alt::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 18px;
+  width: 28px;
+  height: 14px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 6px;
+  transform: rotate(6deg);
+  border: 1px solid rgba(124, 179, 132, 0.65);
+}
+
+.fe-detail-bubble-alt summary::-webkit-details-marker {
+  display: none;
+}
+
+.fe-detail-bubble-alt .fe-dtag {
+  border-color: rgba(124, 179, 132, 0.35);
 }

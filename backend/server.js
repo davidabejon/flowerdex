@@ -64,10 +64,10 @@ app.get('/photos', async (req, res) => {
 
     const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos');
     const total = totalRow ? totalRow.cnt || 0 : 0;
-    const rows = await db.all('SELECT filename, species FROM photos ORDER BY created_at DESC LIMIT ? OFFSET ?', [perPage, offset]);
+    const rows = await db.all('SELECT id, filename, species FROM photos ORDER BY created_at DESC LIMIT ? OFFSET ?', [perPage, offset]);
 
     res.json({
-      photos: rows.map(r => ({ filename: r.filename, species: r.species })),
+      photos: rows.map(r => ({ id: r.id, filename: r.filename, species: r.species })),
       page,
       per_page: perPage,
       total,
@@ -84,6 +84,20 @@ app.get('/photos/:id', async (req, res) => {
     if (!row) return res.status(404).json({ error: 'Not found' });
     row.metadata = row.metadata ? JSON.parse(row.metadata) : null;
     res.json(row);
+  } catch (e) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Return only enrichment details (and basic photo info) for a single photo
+app.get('/photos/:id/details', async (req, res) => {
+  try {
+    const row = await db.get('SELECT id, filename, species, metadata, created_at FROM photos WHERE id = ?', [req.params.id]);
+    if (!row) return res.status(404).json({ error: 'Not found' });
+    let metadata = null;
+    try { metadata = row.metadata ? JSON.parse(row.metadata) : null; } catch (err) { metadata = null; }
+    const enrichment = metadata && metadata.enrichment ? metadata.enrichment : null;
+    res.json({ photo: { id: row.id, filename: row.filename, species: row.species, created_at: row.created_at }, enrichment });
   } catch (e) {
     res.status(500).json({ error: 'Internal server error' });
   }
