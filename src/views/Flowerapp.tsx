@@ -5,16 +5,14 @@ import Login from '../components/Login';
 import { apiFetch } from '../utils/api';
 import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
-import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
-
-const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
+import { type Flower } from '../data/flowersData';
 
 // ─── COMPONENTS ───
 export const FlowerEncyclopedia: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [inputQuery, setInputQuery] = useState('');
   const [loggedIn, setLoggedIn] = useState<boolean>(() => !!localStorage.getItem('fd_token'));
-  const [bgImage, setBgImage] = useState<string>(() => {
+  const [bgImage, _] = useState<string>(() => {
     try {
       const day = new URL('../assets/bg_day.jpg', import.meta.url).href;
       const night = new URL('../assets/bg_night.jpg', import.meta.url).href;
@@ -138,7 +136,6 @@ export const FlowerEncyclopedia: React.FC = () => {
               setTagsOpen={setTagsOpen}
               filteredFlowers={filteredFlowers}
               handleShowDetail={handleShowDetail}
-              onReloadPhotos={() => loadFlowers(page)}
               onOpenUpload={() => setUploadMode(true)}
               page={page}
               totalPages={totalPages}

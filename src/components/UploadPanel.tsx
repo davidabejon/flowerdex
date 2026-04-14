@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../utils/api';
 
-const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
-
 interface Props {
   onUploaded: () => void;
 }

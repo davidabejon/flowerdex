@@ -14,7 +14,6 @@ interface Props {
   setTagsOpen: (v: boolean) => void;
   filteredFlowers: Flower[];
   handleShowDetail: (f: Flower) => void;
-  onReloadPhotos?: () => void;
   onOpenUpload?: () => void;
   page?: number;
   totalPages?: number;
@@ -30,7 +29,6 @@ const FlowerList: React.FC<Props> = ({
   setTagsOpen,
   filteredFlowers,
   handleShowDetail,
-  onReloadPhotos,
   onOpenUpload,
   page,
   totalPages,

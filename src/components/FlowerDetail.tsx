@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { type Flower, TAG_STYLE, CATS } from '../data/flowersData';
+import { type Flower, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
 import { catOf } from '../utils/functions';
 import { apiFetch } from '../utils/api';
@@ -10,8 +10,6 @@ interface Props {
   onBack: () => void;
   applyTag: (tag: string) => void;
 }
-
-const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000';
 
 const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
   const [details, setDetails] = useState<any>(null);
