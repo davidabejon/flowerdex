@@ -227,7 +227,7 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   position: relative;
   transition: transform 0.12s;
@@ -250,6 +250,7 @@
   font-size: 56px;
   overflow: hidden;
   position: relative;
+  height: 80%;
 }
 
 .fe-mis-badge {
