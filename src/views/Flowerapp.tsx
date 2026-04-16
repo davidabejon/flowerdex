@@ -124,7 +124,24 @@ export const FlowerEncyclopedia: React.FC = () => {
           {currentFlower ? (
             <FlowerDetail flower={currentFlower} onBack={handleShowList} applyTag={applyTag} />
           ) : uploadMode ? (
-            <UploadView onBack={() => { setUploadMode(false); loadFlowers(); }} onUploaded={() => { loadFlowers(); setUploadMode(false); }} />
+            <UploadView
+              onBack={() => { setUploadMode(false); loadFlowers(); }}
+              onUploaded={() => { loadFlowers(); setUploadMode(false); }}
+              onDuplicate={(p) => {
+                // construct a minimal Flower object and open detail view
+                const f: any = {
+                  id: p.id,
+                  name: p.species || 'Sin identificar',
+                  latin: '',
+                  e: '🌸',
+                  images: [(API_BASE) + '/uploads/' + (p.filename || '')],
+                  desc: '',
+                  tags: [],
+                };
+                setCurrentFlower(f);
+                setUploadMode(false);
+              }}
+            />
           ) : (
             <FlowerList
               searchQuery={inputQuery}

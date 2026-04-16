@@ -65,6 +65,22 @@ app.post('/upload', upload.single('photo'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
     const filePath = req.file.path;
     const identification = await identifyImage(filePath);
+
+    // Si la identificación contiene una especie, comprobar si ya existe en la BD
+    const species = identification && identification.species ? identification.species : null;
+    if (species) {
+      try {
+        const exists = await db.get('SELECT id, filename, species FROM photos WHERE LOWER(species) = LOWER(?) LIMIT 1', [species]);
+        if (exists) {
+          // eliminar fichero subido para evitar archivos huérfanos
+          try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch (err) { console.warn('Failed to delete uploaded file:', filePath, err?.message || err); }
+          return res.status(409).json({ error: 'La especie ya está registrada', id: exists.id, filename: exists.filename, species: exists.species });
+        }
+      } catch (err) {
+        console.warn('Error comprobando especie existente:', err?.message || err);
+      }
+    }
+
     const enrichment = await enrichSpecies(identification.species);
 
     const metadata = { identification, enrichment };
