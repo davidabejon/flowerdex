@@ -163,7 +163,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
         <div className="fe-detail-hero">
           <ImageSlider images={flower.images} alt={flower.name} />
         </div>
-        <div className="fe-detail-bubble">
+        <div className="fe-detail-bubble" style={{ zIndex: 1, marginTop: -36, boxShadow: '0 8px 20px rgba(0,0,0,0.06)' }}>
           <div className="fe-detail-name">{flower.name}</div>
           {details?.photo?.misclassified && (
             <div style={{ color: '#b00020', fontWeight: 800, marginTop: 6 }}>Mal catalogada — revisar</div>
@@ -264,7 +264,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
             <div>Sin detalles disponibles.</div>
           )}
         </div>
-        
+
         {details?.enrichment?.trefle?.images && Object.keys(details.enrichment.trefle.images).length > 0 && (
           <div style={{ padding: 12 }}>
             {Object.entries(details.enrichment.trefle.images).map(([part, arr], idx) => {
