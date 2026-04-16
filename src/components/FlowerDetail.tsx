@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { type Flower, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
 import { catOf } from '../utils/functions';
@@ -148,6 +149,8 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="fe-topbar">
@@ -285,7 +288,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
         )}
       </div>
       <div className="fe-ac-footer">
-        <div className="fe-ac-btn-hint">
+        <div className="fe-ac-btn-hint" onClick={() => navigate('/')}>
           <span className="fe-ac-btn-badge red">B</span> Volver
         </div>
       </div>

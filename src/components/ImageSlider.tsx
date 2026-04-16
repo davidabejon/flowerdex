@@ -10,8 +10,6 @@ const ImageSlider: React.FC<Props> = ({ images, alt = '', small = false }) => {
   const [idx, setIdx] = useState(0);
   const [loaded, setLoaded] = useState<Set<number>>(new Set());
   const [maxRatio, setMaxRatio] = useState<number>(0.66); // height/width
-  if (!images || images.length === 0) return <div style={{fontSize: small ? 28 : 64}}>{alt ? alt[0] : '🌸'}</div>;
-
   // Preload images, measure aspect ratios and mark loaded indices to allow smooth fade-in
   useEffect(() => {
     let cancelled = false;
@@ -42,6 +40,8 @@ const ImageSlider: React.FC<Props> = ({ images, alt = '', small = false }) => {
     });
     return () => { cancelled = true; };
   }, [images, small]);
+
+  if (!images || images.length === 0) return <div style={{fontSize: small ? 28 : 64}}>{alt ? alt[0] : '🌸'}</div>;
 
   const prev = (e?: React.MouseEvent) => {
     e?.stopPropagation();

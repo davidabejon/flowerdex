@@ -1,5 +1,6 @@
 // FlowerEncyclopedia.tsx
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useNavigate, useMatch, useLocation } from 'react-router-dom';
 import FlowerList from '../components/FlowerList';
 import Login from '../components/Login';
 import { API_BASE, apiFetch } from '../utils/api';
@@ -23,9 +24,10 @@ export const FlowerEncyclopedia: React.FC = () => {
   });
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [tagsOpen, setTagsOpen] = useState(false);
-  const [currentFlower, setCurrentFlower] = useState<Flower | null>(null);
   const [flowers, setFlowers] = useState<Flower[]>([]);
-  const [uploadMode, setUploadMode] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const match = useMatch('/photos/:id');
   const [page, setPage] = useState(1);
   const [perPage] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
@@ -81,6 +83,13 @@ export const FlowerEncyclopedia: React.FC = () => {
     return () => clearTimeout(t);
   }, [inputQuery]);
 
+  // Ensure we reload the list when returning to the root list route
+  useEffect(() => {
+    if (location.pathname === '/') {
+      loadFlowers(page, searchQuery);
+    }
+  }, [location.pathname, loadFlowers, page, searchQuery]);
+
   const filteredFlowers = useMemo(() => {
     // If a server-side search is active, `flowers` already contains filtered results.
     // Only apply tag filtering client-side.
@@ -102,33 +111,40 @@ export const FlowerEncyclopedia: React.FC = () => {
 
   const applyTag = useCallback(
     (tag: string) => {
-      setCurrentFlower(null);
+      // ensure any detail view is closed
+      if (location.pathname.startsWith('/photos/')) navigate('/');
       setSelectedTags((prev) => (prev.has(tag) ? new Set(prev) : new Set([...prev, tag])));
       setTagsOpen(true);
     },
-    []
+    [location.pathname, navigate]
   );
 
   const handleShowDetail = useCallback((flower: Flower) => {
-    setCurrentFlower(flower);
-  }, []);
+    navigate(`/photos/${flower.id}`);
+  }, [navigate]);
 
   const handleShowList = useCallback(() => {
-    setCurrentFlower(null);
+    navigate('/');
     // Ensure list is re-fetched with current page/search params when returning
     loadFlowers(page, searchQuery);
-  }, [loadFlowers, page, searchQuery]);
+  }, [navigate, loadFlowers, page, searchQuery]);
 
   return (
     <>
       <div className="fe-container">
         <div className="fe-screen">
-          {currentFlower ? (
-            <FlowerDetail flower={currentFlower} onBack={handleShowList} applyTag={applyTag} />
-          ) : uploadMode ? (
+          {match ? (
+            // if URL is /photos/:id render detail; try to find the flower in current list
+            (() => {
+              const id = match.params.id;
+              const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
+              const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
+              return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
+            })()
+          ) : location.pathname === '/upload' ? (
             <UploadView
-              onBack={() => { setUploadMode(false); loadFlowers(); }}
-              onUploaded={() => { loadFlowers(); setUploadMode(false); }}
+              onBack={() => { navigate('/'); loadFlowers(); }}
+              onUploaded={() => { loadFlowers(); navigate('/'); }}
               onDuplicate={(p) => {
                 // construct a minimal Flower object and open detail view
                 const f: any = {
@@ -140,8 +156,7 @@ export const FlowerEncyclopedia: React.FC = () => {
                   desc: '',
                   tags: [],
                 };
-                setCurrentFlower(f);
-                setUploadMode(false);
+                navigate(`/photos/${p.id}`);
               }}
             />
           ) : (
@@ -155,7 +170,7 @@ export const FlowerEncyclopedia: React.FC = () => {
               setTagsOpen={setTagsOpen}
               filteredFlowers={filteredFlowers}
               handleShowDetail={handleShowDetail}
-              onOpenUpload={() => setUploadMode(true)}
+              onOpenUpload={() => navigate('/upload')}
               page={page}
               totalPages={totalPages}
               onPageChange={(p) => setPage(p)}
