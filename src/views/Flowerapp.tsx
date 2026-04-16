@@ -115,7 +115,9 @@ export const FlowerEncyclopedia: React.FC = () => {
 
   const handleShowList = useCallback(() => {
     setCurrentFlower(null);
-  }, []);
+    // Ensure list is re-fetched with current page/search params when returning
+    loadFlowers(page, searchQuery);
+  }, [loadFlowers, page, searchQuery]);
 
   return (
     <>
