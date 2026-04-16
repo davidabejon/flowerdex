@@ -11,7 +11,7 @@ const PART_TRANSLATIONS: Record<string, string> = {
   'image': 'Imagen',
   'leaf_retention': 'Permanencia de hoja',
   'habit/other': 'Otro',
-  '': 'Otro'
+  '': 'Sin catalogar'
 };
 
 export default PART_TRANSLATIONS;

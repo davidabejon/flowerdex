@@ -271,23 +271,36 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
 
         {details?.enrichment?.trefle?.images && Object.keys(details.enrichment.trefle.images).length > 0 && (
           <div style={{ padding: 12 }}>
-            {Object.entries(details.enrichment.trefle.images).map(([part, arr], idx) => {
-              if (!arr || !Array.isArray(arr) || arr.length === 0) return null;
-              const images = arr.map((it: any) => it.image_url).filter(Boolean);
-              const title = (PART_TRANSLATIONS[part] || (part ? part.charAt(0).toUpperCase() + part.slice(1) : 'Otro')) as string;
-              const cls = idx % 2 === 0 ? 'fe-detail-bubble' : 'fe-detail-bubble-alt';
-              return (
-                <details key={`${part}-${idx}`} className={cls} style={{ marginBottom: 10 }}>
-                  <summary style={{ cursor: 'pointer', fontWeight: 800, padding: '8px 12px' }}>{title} ({images.length})</summary>
-                  <div style={{ padding: 8 }}>
-                    <ImageSlider images={images} alt={title} small />
-                    <div style={{ fontSize: 12, marginTop: 8, color: '#666' }}>
-                      {arr.map((it: any) => (<div key={it.id}>{it.copyright}</div>))}
+            {(() => {
+              const imgs = details.enrichment.trefle.images as Record<string, any[]>;
+              const order = ['flower','leaf','fruit','seed','fruit_or_seed','habit','bark','foliage','other',''];
+              const partsToRender: Array<{ part: string; arr: any[] }>=[];
+              for (const p of order) {
+                const arr = imgs[p];
+                if (arr && Array.isArray(arr) && arr.length > 0) partsToRender.push({ part: p, arr });
+              }
+              // also include any other keys not in the order, appended afterwards
+              for (const [p, arr] of Object.entries(imgs)) {
+                if (!order.includes(p) && arr && Array.isArray(arr) && arr.length > 0) partsToRender.push({ part: p, arr });
+              }
+
+              return partsToRender.map(({ part, arr }, idx) => {
+                const images = arr.map((it: any) => it.image_url).filter(Boolean);
+                const title = (PART_TRANSLATIONS[part] || (part ? part.charAt(0).toUpperCase() + part.slice(1) : 'Otro')) as string;
+                const cls = idx % 2 === 0 ? 'fe-detail-bubble' : 'fe-detail-bubble-alt';
+                return (
+                  <details key={`${part}-${idx}`} className={cls} style={{ marginBottom: 10 }}>
+                    <summary style={{ cursor: 'pointer', fontWeight: 800, padding: '8px 12px' }}>{title} ({images.length})</summary>
+                    <div style={{ padding: 8 }}>
+                      <ImageSlider images={images} alt={title} small />
+                      <div style={{ fontSize: 12, marginTop: 8, color: '#666' }}>
+                        {arr.map((it: any) => (<div key={it.id}>{it.copyright}</div>))}
+                      </div>
                     </div>
-                  </div>
-                </details>
-              );
-            })}
+                  </details>
+                );
+              });
+            })()}
           </div>
         )}
       </div>
