@@ -213,6 +213,40 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
                 <br />
                 Género: {details.enrichment?.trefle?.genus || '—'}
               </div>
+
+              <div className="fe-detail-actions">
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                  <button className="fe-pag-btn" onClick={() => setEditing(!editing)} disabled={!details}>{editing ? 'Cancelar' : 'Editar'}</button>
+                  <button className="fe-pag-btn" onClick={() => toggleMisclassified()} disabled={misloading || !details}>{details?.photo?.misclassified ? 'Desmarcar mal catalogada' : 'Marcar mal catalogada'}</button>
+                  <button className="fe-pag-btn" onClick={() => setShowDeleteModal(true)} disabled={!details} style={{ background: '#ff6666', color: '#fff' }}>Eliminar</button>
+                </div>
+
+                {editing && (
+                  <div className="fe-edit-inline">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <label style={{ fontSize: 12, fontWeight: 700 }}>Especie (binomial)</label>
+                      <input value={formSpecies} onChange={e => setFormSpecies(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                      <label style={{ fontSize: 12, fontWeight: 700 }}>Nombres comunes (ES)</label>
+                      <input value={formCommonEs} onChange={e => setFormCommonEs(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                      <label style={{ fontSize: 12, fontWeight: 700 }}>Nombres comunes (EN)</label>
+                      <input value={formCommonEn} onChange={e => setFormCommonEn(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                      <label style={{ fontSize: 12, fontWeight: 700 }}>Familia</label>
+                      <input value={formFamily} onChange={e => setFormFamily(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                      <label style={{ fontSize: 12, fontWeight: 700 }}>Género</label>
+                      <input value={formGenus} onChange={e => setFormGenus(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
+
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 6 }}>
+                        <button className="fe-pag-btn" onClick={() => setEditing(false)} disabled={saving}>Cancelar</button>
+                        <button className="fe-pag-btn" onClick={() => saveOverrides()} disabled={saving}>{saving ? 'Guardando…' : 'Guardar cambios'}</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
               {details.enrichment?.trefle?.image_url ? (
                 <div style={{ marginTop: 8, paddingLeft: 12, paddingRight: 12 }}>
                   <div className="fe-trefle-hero">
@@ -228,37 +262,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
               ) : (
                 <div style={{ fontSize: 13, color: '#444', marginBottom: 8 }}>Imagen: —</div>
               )}
-              <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', justifyContent: 'center' }}>
-                <button className="fe-pag-btn" onClick={() => setEditing(!editing)}>{editing ? 'Cancelar' : 'Editar'}</button>
-                <button className="fe-pag-btn" onClick={() => toggleMisclassified()} disabled={misloading}>{details.photo?.misclassified ? 'Desmarcar mal catalogada' : 'Marcar mal catalogada'}</button>
-                <button className="fe-pag-btn" onClick={() => setShowDeleteModal(true)} style={{ background: '#ff6666', color: '#fff' }}>Eliminar</button>
-              </div>
-
-              {editing && (
-                <div style={{ marginTop: 12, padding: 12, border: '1px solid var(--sand2)', borderRadius: 10 }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <label style={{ fontSize: 12, fontWeight: 700 }}>Especie (binomial)</label>
-                    <input value={formSpecies} onChange={e => setFormSpecies(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
-
-                    <label style={{ fontSize: 12, fontWeight: 700 }}>Nombres comunes (ES)</label>
-                    <input value={formCommonEs} onChange={e => setFormCommonEs(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
-
-                    <label style={{ fontSize: 12, fontWeight: 700 }}>Nombres comunes (EN)</label>
-                    <input value={formCommonEn} onChange={e => setFormCommonEn(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
-
-                    <label style={{ fontSize: 12, fontWeight: 700 }}>Familia</label>
-                    <input value={formFamily} onChange={e => setFormFamily(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
-
-                    <label style={{ fontSize: 12, fontWeight: 700 }}>Género</label>
-                    <input value={formGenus} onChange={e => setFormGenus(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd' }} />
-
-                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 6 }}>
-                      <button className="fe-pag-btn" onClick={() => setEditing(false)} disabled={saving}>Cancelar</button>
-                      <button className="fe-pag-btn" onClick={() => saveOverrides()} disabled={saving}>{saving ? 'Guardando…' : 'Guardar cambios'}</button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              
             </div>
           ) : (
             <div>Sin detalles disponibles.</div>
