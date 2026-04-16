@@ -35,6 +35,23 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(express.json());
+// Deep merge helper: merges source into target recursively (objects only). Arrays and
+// non-objects are replaced by source.
+function deepMerge(target, source) {
+  if (!source || typeof source !== 'object') return source;
+  if (!target || typeof target !== 'object') target = {};
+  const out = Array.isArray(source) ? source.slice() : { ...target };
+  for (const key of Object.keys(source)) {
+    const sVal = source[key];
+    const tVal = target[key];
+    if (sVal && typeof sVal === 'object' && !Array.isArray(sVal)) {
+      out[key] = deepMerge(tVal || {}, sVal);
+    } else {
+      out[key] = sVal;
+    }
+  }
+  return out;
+}
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 // Global auth guard: require auth for all API routes except /auth and /uploads and OPTIONS
@@ -193,11 +210,11 @@ app.get('/photos/:id', async (req, res) => {
     let overrides = null;
     try { overrides = row.overrides ? JSON.parse(row.overrides) : null; } catch (err) { overrides = null; }
 
-    // apply overrides (shallow)
+    // apply overrides (deep merge)
     if (overrides) {
       if (!metadata) metadata = {};
-      if (overrides.identification) metadata.identification = { ...(metadata.identification || {}), ...(overrides.identification || {}) };
-      if (overrides.enrichment) metadata.enrichment = { ...(metadata.enrichment || {}), ...(overrides.enrichment || {}) };
+      if (overrides.identification) metadata.identification = deepMerge(metadata.identification || {}, overrides.identification);
+      if (overrides.enrichment) metadata.enrichment = deepMerge(metadata.enrichment || {}, overrides.enrichment);
       if (overrides.species) metadata.identification = { ...(metadata.identification || {}), species: overrides.species };
     }
 
@@ -221,7 +238,7 @@ app.get('/photos/:id/details', async (req, res) => {
     let enrichment = metadata && metadata.enrichment ? metadata.enrichment : null;
     let species = row.species;
     if (overrides) {
-      if (overrides.enrichment) enrichment = { ...(enrichment || {}), ...overrides.enrichment };
+      if (overrides.enrichment) enrichment = deepMerge(enrichment || {}, overrides.enrichment);
       if (overrides.species) species = overrides.species;
     }
 
@@ -254,7 +271,11 @@ app.put('/photos/:id/overrides', authRequired, async (req, res) => {
     const overrides = req.body || {};
     const row = await db.get('SELECT * FROM photos WHERE id = ?', [id]);
     if (!row) return res.status(404).json({ error: 'Not found' });
-    await db.run('UPDATE photos SET overrides = ? WHERE id = ?', [JSON.stringify(overrides), id]);
+    // Merge with any existing overrides (deep) so unspecified fields are preserved
+    let existing = {};
+    try { existing = row.overrides ? JSON.parse(row.overrides) : {}; } catch (e) { existing = {}; }
+    const merged = deepMerge(existing || {}, overrides || {});
+    await db.run('UPDATE photos SET overrides = ? WHERE id = ?', [JSON.stringify(merged), id]);
     const updated = await db.get('SELECT id, filename, species, metadata, overrides, misclassified, created_at FROM photos WHERE id = ?', [id]);
     res.json({ success: true, photo: updated });
   } catch (e) {
