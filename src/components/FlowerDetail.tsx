@@ -19,6 +19,9 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [misloading, setMisloading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   const [formSpecies, setFormSpecies] = useState('');
   const [formCommonEs, setFormCommonEs] = useState('');
@@ -124,6 +127,27 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     }
   };
 
+  const deletePhoto = async () => {
+    if (!details?.photo?.id) return;
+    setDeleting(true);
+    setDeleteErr(null);
+    try {
+      const res = await apiFetch(`/photos/${details.photo.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error('Status ' + res.status + ' ' + t);
+      }
+      // go back to list after successful deletion
+      onBack();
+    } catch (e: any) {
+      console.error(e);
+      setDeleteErr(e?.message || String(e));
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
   return (
     <>
       <div className="fe-topbar">
@@ -204,6 +228,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
               <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center', justifyContent: 'center' }}>
                 <button className="fe-pag-btn" onClick={() => setEditing(!editing)}>{editing ? 'Cancelar' : 'Editar'}</button>
                 <button className="fe-pag-btn" onClick={() => toggleMisclassified()} disabled={misloading}>{details.photo?.misclassified ? 'Desmarcar mal catalogada' : 'Marcar mal catalogada'}</button>
+                <button className="fe-pag-btn" onClick={() => setShowDeleteModal(true)} style={{ background: '#ff6666', color: '#fff' }}>Eliminar</button>
               </div>
 
               {editing && (
@@ -264,6 +289,19 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
           <span className="fe-ac-btn-badge red">B</span> Volver
         </div>
       </div>
+      {showDeleteModal && (
+        <div style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%' }}>
+            <div style={{ fontWeight: 800, marginBottom: 8 }}>Confirmar eliminación</div>
+            <div style={{ marginBottom: 12 }}>¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.</div>
+            {deleteErr && <div style={{ color: 'red', marginBottom: 8 }}>Error: {deleteErr}</div>}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button className="fe-pag-btn" onClick={() => { setShowDeleteModal(false); setDeleteErr(null); }} disabled={deleting}>Cancelar</button>
+              <button className="fe-pag-btn" onClick={() => deletePhoto()} disabled={deleting} style={{ background: '#b00020', color: '#fff' }}>{deleting ? 'Eliminando…' : 'Eliminar definitivamente'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
