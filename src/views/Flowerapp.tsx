@@ -146,16 +146,6 @@ export const FlowerEncyclopedia: React.FC = () => {
               onBack={() => { navigate('/'); loadFlowers(); }}
               onUploaded={() => { loadFlowers(); navigate('/'); }}
               onDuplicate={(p) => {
-                // construct a minimal Flower object and open detail view
-                const f: any = {
-                  id: p.id,
-                  name: p.species || 'Sin identificar',
-                  latin: '',
-                  e: '🌸',
-                  images: [(API_BASE) + '/uploads/' + (p.filename || '')],
-                  desc: '',
-                  tags: [],
-                };
                 navigate(`/photos/${p.id}`);
               }}
             />
