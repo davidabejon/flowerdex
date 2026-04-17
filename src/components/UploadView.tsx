@@ -11,7 +11,6 @@ interface Props {
 const UploadView: React.FC<Props> = ({ onBack, onUploaded, onDuplicate }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Header left={<button className="fe-topbar-back" onClick={onBack}>←</button>} title="Subir nueva flor" />
 
       <div className="fe-detail-scroll">
         <div style={{ padding: 12 }}>
@@ -21,7 +20,6 @@ const UploadView: React.FC<Props> = ({ onBack, onUploaded, onDuplicate }) => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };
