@@ -571,6 +571,7 @@
   font-weight: 800;
   color: var(--brown-dark);
   cursor: pointer;
+  min-width: 84px;
 }
 
 .fe-pag-btn:disabled {
