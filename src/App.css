@@ -498,6 +498,42 @@
   align-items: center;
 }
 
+/* Error / alert style matching Animal Crossing aesthetic */
+.fe-error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(255,250,250,0.98), rgba(255,243,243,0.98));
+  border: 2px solid rgba(176,0,32,0.08);
+  color: #b00020;
+  border-radius: 12px;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: inset 0 -6px 14px rgba(255,255,255,0.6), 0 6px 18px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.fe-error .fe-error-icon { font-size: 18px; }
+
+/* Floating top notification (centered) */
+.fe-floating-alert {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  max-width: 420px;
+  width: calc(100% - 32px);
+  pointer-events: auto;
+  animation: slideDown 320ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 .fe-pagination {
   display: flex;
   gap: 10px;
@@ -638,4 +674,47 @@
 
 .fe-detail-bubble-alt .fe-dtag {
   border-color: rgba(124, 179, 132, 0.35);
+}
+
+/* Ensure login inputs stay white even when OS/device applies dark styles */
+.fe-ac-panel input,
+.fe-ac-panel textarea,
+.fe-login-input {
+  background: #ffffff !important;
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111 !important;
+  border: 1px solid var(--sand2) !important;
+  outline: 1px solid transparent !important;
+  transition: outline-color 0.15s, border-color 0.15s;
+}
+
+.fe-ac-panel input:focus,
+.fe-ac-panel textarea:focus,
+.fe-login-input:focus {
+  outline-color: var(--brown) !important;
+}
+
+.fe-login-input::placeholder {
+  color: rgba(0,0,0,0.45) !important;
+}
+
+/* Override autofill / dark-mode UA styles on WebKit-based browsers */
+.fe-ac-panel input:-webkit-autofill,
+.fe-ac-panel input:-webkit-autofill::first-line {
+  -webkit-text-fill-color: #111 !important;
+  background-color: #fff !important;
+}
+
+/* Restore search input visuals: transparent background, no border */
+.fe-search-row input {
+  background: transparent !important;
+  color: var(--brown-text) !important;
+  -webkit-text-fill-color: unset !important;
+  caret-color: inherit !important;
+  border: none !important;
+  outline: none !important;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
 }

@@ -199,7 +199,12 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
           {loading ? (
             <div>Cargando detalles…</div>
           ) : err ? (
-            <div style={{ color: 'red' }}>Error: {err}</div>
+            <div role="alert" className="fe-floating-alert">
+              <div className="fe-error">
+                <span className="fe-error-icon">⚠️</span>
+                <span>Error: {err}</span>
+              </div>
+            </div>
           ) : details ? (
             <div>
               <div className='fe-detail-tags-title'>{details.photo?.species || ''}</div>
@@ -302,10 +307,10 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
 
       {showDeleteModal && (
         <div style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-          <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%' }}>
+            <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%' }}>
             <div style={{ fontWeight: 800, marginBottom: 8 }}>Confirmar eliminación</div>
             <div style={{ marginBottom: 12 }}>¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.</div>
-            {deleteErr && <div style={{ color: 'red', marginBottom: 8 }}>Error: {deleteErr}</div>}
+            {deleteErr && (<div role="alert" className="fe-error" style={{ marginBottom: 8 }}><span className="fe-error-icon">⚠️</span><span>{deleteErr}</span></div>)}
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button className="fe-pag-btn" onClick={() => { setShowDeleteModal(false); setDeleteErr(null); }} disabled={deleting}>Cancelar</button>
               <button className="fe-pag-btn" onClick={() => deletePhoto()} disabled={deleting} style={{ background: '#b00020', color: '#fff' }}>{deleting ? 'Eliminando…' : 'Eliminar definitivamente'}</button>

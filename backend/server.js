@@ -65,21 +65,21 @@ app.use((req, res, next) => {
   // allow root or public info if needed (none)
   // otherwise require auth
   const auth = req.headers.authorization;
-  if (!auth) return res.status(401).json({ error: 'missing authorization' });
+  if (!auth) return res.status(401).json({ error: 'Falta autorización' });
   const parts = auth.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'invalid authorization' });
+  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'Autorización inválida' });
   try {
     const decoded = jwt.verify(parts[1], JWT_SECRET);
     req.user = decoded;
     return next();
   } catch (e) {
-    return res.status(401).json({ error: 'invalid token' });
+    return res.status(401).json({ error: 'Token inválido' });
   }
 });
 
 app.post('/upload', upload.single('photo'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.file) return res.status(400).json({ error: 'No se subió ningún archivo' });
     const filePath = req.file.path;
     const identification = await identifyImage(filePath);
 
@@ -111,7 +111,7 @@ app.post('/upload', upload.single('photo'), async (req, res) => {
     res.json({ success: true, photo: saved, uploadsPath: `/uploads/${req.file.filename}` });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -119,48 +119,48 @@ app.post('/upload', upload.single('photo'), async (req, res) => {
 app.post('/auth/register', async (req, res) => {
   try {
     const { username, password } = req.body || {};
-    if (!username || !password) return res.status(400).json({ error: 'username and password required' });
+    if (!username || !password) return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
     const hash = bcrypt.hashSync(password, 10);
     try {
       const insert = await db.run('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hash]);
       const user = await db.get('SELECT id, username, created_at FROM users WHERE id = ?', [insert.id]);
       return res.json({ success: true, user });
     } catch (e) {
-      return res.status(400).json({ error: 'username already exists' });
+      return res.status(400).json({ error: 'El nombre de usuario ya existe' });
     }
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
 app.post('/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body || {};
-    if (!username || !password) return res.status(400).json({ error: 'username and password required' });
+    if (!username || !password) return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
     const row = await db.get('SELECT * FROM users WHERE username = ?', [username]);
-    if (!row) return res.status(401).json({ error: 'invalid credentials' });
+    if (!row) return res.status(401).json({ error: 'Credenciales inválidas' });
     const ok = bcrypt.compareSync(password, row.password_hash);
-    if (!ok) return res.status(401).json({ error: 'invalid credentials' });
+    if (!ok) return res.status(401).json({ error: 'Credenciales inválidas' });
     const token = jwt.sign({ id: row.id, username: row.username }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ success: true, token });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
 function authRequired(req, res, next) {
   const auth = req.headers.authorization;
-  if (!auth) return res.status(401).json({ error: 'missing authorization' });
+  if (!auth) return res.status(401).json({ error: 'Falta autorización' });
   const parts = auth.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'invalid authorization' });
+  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'Autorización inválida' });
   try {
     const decoded = jwt.verify(parts[1], JWT_SECRET);
     req.user = decoded;
     next();
   } catch (e) {
-    return res.status(401).json({ error: 'invalid token' });
+    return res.status(401).json({ error: 'Token inválido' });
   }
 }
 
@@ -197,14 +197,14 @@ app.get('/photos', async (req, res) => {
 
     res.json({ photos, page, per_page: perPage, total, total_pages: Math.ceil(total / perPage) });
   } catch (e) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
 app.get('/photos/:id', async (req, res) => {
   try {
     const row = await db.get('SELECT * FROM photos WHERE id = ?', [req.params.id]);
-    if (!row) return res.status(404).json({ error: 'Not found' });
+    if (!row) return res.status(404).json({ error: 'No encontrado' });
     let metadata = null;
     try { metadata = row.metadata ? JSON.parse(row.metadata) : null; } catch (err) { metadata = null; }
     let overrides = null;
@@ -229,7 +229,7 @@ app.get('/photos/:id', async (req, res) => {
 app.get('/photos/:id/details', async (req, res) => {
   try {
     const row = await db.get('SELECT id, filename, species, metadata, overrides, misclassified, created_at FROM photos WHERE id = ?', [req.params.id]);
-    if (!row) return res.status(404).json({ error: 'Not found' });
+    if (!row) return res.status(404).json({ error: 'No encontrado' });
     let metadata = null;
     try { metadata = row.metadata ? JSON.parse(row.metadata) : null; } catch (err) { metadata = null; }
     let overrides = null;
@@ -254,13 +254,13 @@ app.post('/photos/:id/misclassified', authRequired, async (req, res) => {
     const id = req.params.id;
     const mis = !!req.body.misclassified;
     const row = await db.get('SELECT * FROM photos WHERE id = ?', [id]);
-    if (!row) return res.status(404).json({ error: 'Not found' });
+    if (!row) return res.status(404).json({ error: 'No encontrado' });
     await db.run('UPDATE photos SET misclassified = ? WHERE id = ?', [mis ? 1 : 0, id]);
     const updated = await db.get('SELECT id, filename, species, metadata, overrides, misclassified, created_at FROM photos WHERE id = ?', [id]);
     res.json({ success: true, photo: updated });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -270,7 +270,7 @@ app.put('/photos/:id/overrides', authRequired, async (req, res) => {
     const id = req.params.id;
     const overrides = req.body || {};
     const row = await db.get('SELECT * FROM photos WHERE id = ?', [id]);
-    if (!row) return res.status(404).json({ error: 'Not found' });
+    if (!row) return res.status(404).json({ error: 'No encontrado' });
     // Merge with any existing overrides (deep) so unspecified fields are preserved
     let existing = {};
     try { existing = row.overrides ? JSON.parse(row.overrides) : {}; } catch (e) { existing = {}; }
@@ -280,7 +280,7 @@ app.put('/photos/:id/overrides', authRequired, async (req, res) => {
     res.json({ success: true, photo: updated });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -288,7 +288,7 @@ app.delete('/photos/:id', authRequired, async (req, res) => {
   try {
     const id = req.params.id;
     const row = await db.get('SELECT * FROM photos WHERE id = ?', [id]);
-    if (!row) return res.status(404).json({ error: 'Not found' });
+    if (!row) return res.status(404).json({ error: 'No encontrado' });
 
     // delete DB record
     await db.run('DELETE FROM photos WHERE id = ?', [id]);
@@ -298,13 +298,13 @@ app.delete('/photos/:id', authRequired, async (req, res) => {
     try {
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     } catch (err) {
-      console.warn('Failed to delete file:', filePath, err?.message || err);
+      console.warn('No se pudo eliminar el archivo:', filePath, err?.message || err);
     }
 
     res.json({ success: true });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 

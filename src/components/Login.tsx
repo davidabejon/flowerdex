@@ -40,13 +40,18 @@ const Login: React.FC<Props> = ({ onSuccess, onClose, bgImage }) => {
       <div role="dialog" aria-modal="true" aria-labelledby="login-title" className="fe-ac-panel" style={{ width: 360, maxWidth: '94%', padding: 16, background: 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,246,237,0.96))' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
           <div id="login-title" style={{ fontWeight: 800 }}>Iniciar sesión</div>
-          <button type="button" aria-label="Cerrar" onClick={() => onClose && onClose()} style={{ background: 'transparent', border: 'none', fontSize: 18, cursor: 'pointer' }}>✕</button>
         </div>
-        {err && <div role="alert" style={{ color: 'crimson', marginBottom: 8 }}>{err}</div>}
+        {err && (
+          <div role="alert" className="fe-floating-alert">
+            <div className="fe-error">
+              <span>{err}</span>
+            </div>
+          </div>
+        )}
         <label className="visually-hidden" htmlFor="login-user">Usuario</label>
-        <input id="login-user" ref={userRef} aria-label="Usuario" placeholder="Usuario" value={user} onChange={e => setUser(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
+        <input id="login-user" className="fe-login-input" ref={userRef} aria-label="Usuario" placeholder="Usuario" value={user} onChange={e => setUser(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
         <label className="visually-hidden" htmlFor="login-pass">Contraseña</label>
-        <input id="login-pass" type="password" aria-label="Contraseña" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
+        <input id="login-pass" className="fe-login-input" type="password" aria-label="Contraseña" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button type="button" className="fe-pag-btn" aria-busy={loading} onClick={() => submit()} disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button>
         </div>
