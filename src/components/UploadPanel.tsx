@@ -107,11 +107,9 @@ const UploadPanel: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
       </div>
       {preview && <div style={{ marginTop: 12 }}><img src={preview} alt={file ? `Preview de ${file.name}` : 'Preview'} style={{ maxWidth: '100%', maxHeight: 260, borderRadius: 12, border: '3px solid var(--outline)' }} /></div>}
       {error && (
-        <div role="alert" className="fe-floating-alert">
-          <div className="fe-error">
-            <span className="fe-error-icon">⚠️</span>
-            <div style={{ textAlign: 'left' }}>{error}</div>
-          </div>
+        <div role="alert" className="fe-error" style={{ marginTop: 12, textAlign: 'left' }}>
+          <span className="fe-error-icon">⚠️</span>
+          <div>{error}</div>
         </div>
       )}
     </div>

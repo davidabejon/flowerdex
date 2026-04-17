@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { type Flower, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
-// Header/Footer are provided by Layout; keep this component focused on detail content
 import { catOf } from '../utils/functions';
 import { apiFetch } from '../utils/api';
 import PART_TRANSLATIONS from '../utils/partTranslations';
@@ -149,8 +147,6 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
       setShowDeleteModal(false);
     }
   };
-
-  const navigate = useNavigate();
 
   return (
     <>

@@ -1,14 +1,12 @@
 import React from 'react';
 import UploadPanel from './UploadPanel';
-// Header/Footer are provided by Layout; keep this view focused on upload content
 
 interface Props {
-  onBack: () => void;
   onUploaded?: () => void;
   onDuplicate?: (photo: { id: number; filename?: string; species?: string }) => void;
 }
 
-const UploadView: React.FC<Props> = ({ onBack, onUploaded, onDuplicate }) => {
+const UploadView: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
 

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
 import Login from './Login';
-// Header/Footer are provided by Layout; keep this component focused on list content
-import { saveToken } from '../utils/api';
 
 interface Props {
   searchQuery: string;

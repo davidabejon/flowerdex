@@ -178,7 +178,6 @@ export const FlowerEncyclopedia: React.FC = () => {
           })()
         ) : matchUpload ? (
           <UploadView
-            onBack={() => { navigate('/'); loadFlowers(); }}
             onUploaded={() => { loadFlowers(); navigate('/'); }}
             onDuplicate={(p) => {
               navigate(`/photos/${p.id}`);
