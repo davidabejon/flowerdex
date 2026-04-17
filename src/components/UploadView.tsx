@@ -11,7 +11,7 @@ interface Props {
 const UploadView: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
   // recent photos fetched from backend (fallback to emoji placeholders)
   const [recent, setRecent] = useState<Array<{ id?: number; filename?: string; species?: string; emoji?: string }>>(
-    [ { emoji: '🌸' }, { emoji: '🌼' }, { emoji: '🌿' }, { emoji: '🍃' }, { emoji: '🌺' }, { emoji: '🌻' } ]
+    [{ emoji: '🌸' }, { emoji: '🌼' }, { emoji: '🌿' }, { emoji: '🍃' }, { emoji: '🌺' }, { emoji: '🌻' }]
   );
 
   useEffect(() => {

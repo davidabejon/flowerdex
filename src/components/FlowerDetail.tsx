@@ -245,20 +245,20 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
               </div>
               {details.enrichment?.trefle?.image_url ? (
                 <div style={{ marginTop: 8, paddingLeft: 12, paddingRight: 12 }}>
-                    <div className="fe-trefle-hero" style={{ minHeight: 220 }}>
-                      <img
-                        src={details.enrichment.trefle.image_url}
-                        alt="trefle"
-                        onLoad={() => setMainImgLoaded(true)}
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 10, background: 'var(--sand)', opacity: mainImgLoaded ? 1 : 0, transition: 'opacity 320ms ease-in-out' }}
-                      />
-                      <div className="fe-trefle-caption">imagen de muestra</div>
-                    </div>
+                  <div className="fe-trefle-hero" style={{ minHeight: 220 }}>
+                    <img
+                      src={details.enrichment.trefle.image_url}
+                      alt="trefle"
+                      onLoad={() => setMainImgLoaded(true)}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 10, background: 'var(--sand)', opacity: mainImgLoaded ? 1 : 0, transition: 'opacity 320ms ease-in-out' }}
+                    />
+                    <div className="fe-trefle-caption">imagen de muestra</div>
                   </div>
+                </div>
               ) : (
                 <div style={{ fontSize: 13, color: '#444', marginBottom: 8 }}>Imagen: —</div>
               )}
-              
+
             </div>
           ) : (
             <div>Sin detalles disponibles.</div>
@@ -269,8 +269,8 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
           <div style={{ padding: 12 }}>
             {(() => {
               const imgs = details.enrichment.trefle.images as Record<string, any[]>;
-              const order = ['flower','leaf','fruit','seed','fruit_or_seed','habit','bark','foliage','other',''];
-              const partsToRender: Array<{ part: string; arr: any[] }>=[];
+              const order = ['flower', 'leaf', 'fruit', 'seed', 'fruit_or_seed', 'habit', 'bark', 'foliage', 'other', ''];
+              const partsToRender: Array<{ part: string; arr: any[] }> = [];
               for (const p of order) {
                 const arr = imgs[p];
                 if (arr && Array.isArray(arr) && arr.length > 0) partsToRender.push({ part: p, arr });
@@ -303,7 +303,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
 
       {showDeleteModal && (
         <div style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-            <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%' }}>
+          <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%' }}>
             <div style={{ fontWeight: 800, marginBottom: 8 }}>Confirmar eliminación</div>
             <div style={{ marginBottom: 12 }}>¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.</div>
             {deleteErr && (<div role="alert" className="fe-error" style={{ marginBottom: 8 }}><span className="fe-error-icon">⚠️</span><span>{deleteErr}</span></div>)}

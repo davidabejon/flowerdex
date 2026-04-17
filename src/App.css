@@ -68,7 +68,7 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(6px);
 }
 
@@ -284,8 +284,8 @@
   border-radius: 10px;
   font-size: 12px;
   font-weight: 800;
-  border: 1px solid rgba(176,0,32,0.12);
-  box-shadow: 0 4px 10px rgba(176,0,32,0.06);
+  border: 1px solid rgba(176, 0, 32, 0.12);
+  box-shadow: 0 4px 10px rgba(176, 0, 32, 0.06);
 }
 
 .fe-fcard-img::before {
@@ -365,15 +365,17 @@
 .fe-edit-overlay {
   width: calc(100% - 24px);
   max-width: 420px;
-  background: rgba(255,255,255,0.98);
+  background: rgba(255, 255, 255, 0.98);
   padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--sand2);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 @media (max-width: 420px) {
-  .fe-edit-overlay { width: calc(100% - 24px); }
+  .fe-edit-overlay {
+    width: calc(100% - 24px);
+  }
 }
 
 /* Actions placed between text and main trefle image */
@@ -391,11 +393,13 @@
   padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--sand2);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 420px) {
-  .fe-edit-inline { width: calc(100% - 24px); }
+  .fe-edit-inline {
+    width: calc(100% - 24px);
+  }
 }
 
 .fe-detail-bubble {
@@ -487,13 +491,14 @@
   position: sticky;
   bottom: 0;
   z-index: 20;
-  box-shadow: 0 -6px 18px rgba(0,0,0,0.06);
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.06);
 }
 
 .fe-ac-footer-left {
   display: flex;
   align-items: center;
-  min-width: 48px; /* placeholder space */
+  min-width: 48px;
+  /* placeholder space */
 }
 
 .fe-ac-footer-right {
@@ -506,19 +511,22 @@
 .fe-error {
   margin-top: 12px;
   padding: 10px 12px;
-  background: linear-gradient(180deg, rgba(255,250,250,0.98), rgba(255,243,243,0.98));
-  border: 2px solid rgba(176,0,32,0.08);
+  background: linear-gradient(180deg, rgba(255, 250, 250, 0.98), rgba(255, 243, 243, 0.98));
+  border: 2px solid rgba(176, 0, 32, 0.08);
   color: #b00020;
   border-radius: 12px;
   font-weight: 800;
   text-align: center;
-  box-shadow: inset 0 -6px 14px rgba(255,255,255,0.6), 0 6px 18px rgba(0,0,0,0.04);
+  box-shadow: inset 0 -6px 14px rgba(255, 255, 255, 0.6), 0 6px 18px rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
-.fe-error .fe-error-icon { font-size: 18px; }
+
+.fe-error .fe-error-icon {
+  font-size: 18px;
+}
 
 /* Floating top notification (centered) */
 .fe-floating-alert {
@@ -530,12 +538,19 @@
   max-width: 420px;
   width: calc(100% - 32px);
   pointer-events: auto;
-  animation: slideDown 320ms cubic-bezier(.2,.9,.2,1);
+  animation: slideDown 320ms cubic-bezier(.2, .9, .2, 1);
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .fe-pagination {
@@ -579,7 +594,7 @@
   border: 3px solid var(--outline);
   border-radius: 14px;
   padding: 10px 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   margin: 0;
   max-width: calc(100% - 40px);
   min-width: 340px;
@@ -614,18 +629,23 @@
   left: 50%;
   transform: translateX(-50%);
   bottom: 8px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.92);
   padding: 6px 10px;
   border-radius: 12px;
   font-size: 12px;
   color: var(--brown-text);
   border: 1px solid var(--sand2);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .fe-ac-btn-hint {
@@ -663,13 +683,13 @@
 
 /* Alternate detail bubble: playful Animal Crossing sticker variant */
 .fe-detail-bubble-alt {
-  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(245,246,237,0.96) 100%);
-  border: 3px dashed rgba(125,197,126,0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(245, 246, 237, 0.96) 100%);
+  border: 3px dashed rgba(125, 197, 126, 0.9);
   border-radius: 18px;
   margin: 12px;
   padding: 14px;
   position: relative;
-  box-shadow: 0 8px 18px rgba(79, 121, 84, 0.12), inset 0 -6px 12px rgba(255,255,255,0.6);
+  box-shadow: 0 8px 18px rgba(79, 121, 84, 0.12), inset 0 -6px 12px rgba(255, 255, 255, 0.6);
 }
 
 .fe-detail-bubble-alt::before {
@@ -682,7 +702,7 @@
   background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%);
   border-radius: 8px;
   transform: rotate(-6deg);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
 .fe-detail-bubble-alt::after {
@@ -692,7 +712,7 @@
   left: 18px;
   width: 28px;
   height: 14px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 6px;
   transform: rotate(6deg);
   border: 1px solid rgba(124, 179, 132, 0.65);
@@ -709,12 +729,13 @@
 /* Upload view specific styles to reduce empty space and add AC flair */
 .fe-upload-hero {
   padding: 18px 14px;
-  background: linear-gradient(180deg, rgba(125,197,126,0.12), rgba(255,255,255,0.0));
+  background: linear-gradient(180deg, rgba(125, 197, 126, 0.12), rgba(255, 255, 255, 0.0));
   border-bottom: 3px solid var(--sand2);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .fe-upload-hero-inner {
   display: flex;
   align-items: center;
@@ -722,9 +743,23 @@
   max-width: 720px;
   width: 100%;
 }
-.fe-upload-hero .fe-topbar-leaf { font-size: 28px; }
-.fe-upload-hero .fe-detail-name { font-size: 20px; font-weight: 900; color: var(--brown-dark); }
-.fe-upload-sub { color: var(--brown); font-weight: 700; opacity: 0.9; margin-left: 6px; }
+
+.fe-upload-hero .fe-topbar-leaf {
+  font-size: 28px;
+}
+
+.fe-upload-hero .fe-detail-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--brown-dark);
+}
+
+.fe-upload-sub {
+  color: var(--brown);
+  font-weight: 700;
+  opacity: 0.9;
+  margin-left: 6px;
+}
 
 .fe-upload-layout {
   display: flex;
@@ -734,22 +769,65 @@
   margin: 0 auto 40px;
   width: 100%;
 }
-.fe-upload-main { flex: 1; }
-.fe-upload-side { width: 220px; display: flex; flex-direction: column; gap: 12px; }
-.fe-upload-tip { padding: 12px; }
-.fe-upload-recent { padding: 12px; }
-.fe-upload-thumb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.fe-upload-thumb { background: linear-gradient(180deg, var(--white-pill), #fff8ee); border: 2px solid var(--sand2); border-radius: 12px; display: flex; align-items: center; justify-content: center; height: 64px; }
-.fe-upload-thumb-inner { font-size: 28px; }
+
+.fe-upload-main {
+  flex: 1;
+}
+
+.fe-upload-side {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fe-upload-tip {
+  padding: 12px;
+}
+
+.fe-upload-recent {
+  padding: 12px;
+}
+
+.fe-upload-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.fe-upload-thumb {
+  background: linear-gradient(180deg, var(--white-pill), #fff8ee);
+  border: 2px solid var(--sand2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+}
+
+.fe-upload-thumb-inner {
+  font-size: 28px;
+}
 
 @media (max-width: 840px) {
-  .fe-upload-layout { flex-direction: column; padding: 10px; }
-  .fe-upload-side { width: 100%; }
+  .fe-upload-layout {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .fe-upload-side {
+    width: 100%;
+  }
 }
 
 @media (max-width: 420px) {
-  .fe-upload-hero-inner { gap: 8px; }
-  .fe-upload-thumb { height: 128px; }
+  .fe-upload-hero-inner {
+    gap: 8px;
+  }
+
+  .fe-upload-thumb {
+    height: 128px;
+  }
 }
 
 /* Ensure login inputs stay white even when OS/device applies dark styles */
@@ -772,7 +850,7 @@
 }
 
 .fe-login-input::placeholder {
-  color: rgba(0,0,0,0.45) !important;
+  color: rgba(0, 0, 0, 0.45) !important;
 }
 
 /* Override autofill / dark-mode UA styles on WebKit-based browsers */

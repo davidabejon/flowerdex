@@ -26,7 +26,7 @@ const ImageSlider: React.FC<Props> = ({ images, alt = '', small = false }) => {
               const r = img.naturalHeight / img.naturalWidth;
               setMaxRatio(prev => Math.max(prev, r));
             }
-          } catch (e) {}
+          } catch (e) { }
         };
         if (img.decode) {
           img.decode().then(markLoaded).catch(() => { img.onload = markLoaded; });
@@ -40,7 +40,7 @@ const ImageSlider: React.FC<Props> = ({ images, alt = '', small = false }) => {
     return () => { cancelled = true; };
   }, [images, small]);
 
-  if (!images || images.length === 0) return <div style={{fontSize: small ? 28 : 64}}>{alt ? alt[0] : '🌸'}</div>;
+  if (!images || images.length === 0) return <div style={{ fontSize: small ? 28 : 64 }}>{alt ? alt[0] : '🌸'}</div>;
 
   const prev = (e?: React.MouseEvent) => {
     e?.stopPropagation();
