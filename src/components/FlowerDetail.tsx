@@ -323,8 +323,9 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
               exit={{ opacity: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.15 }}
               style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
+              onClick={() => { setShowDeleteModal(false); setDeleteErr(null); }}
             >
-              <motion.div initial={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.15 }} style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%', willChange: 'opacity, transform' }}>
+              <motion.div initial={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.15 }} style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%', willChange: 'opacity, transform' }} onClick={(e) => e.stopPropagation()}>
                 <div style={{ fontWeight: 800, marginBottom: 8 }}>Confirmar eliminación</div>
                 <div style={{ marginBottom: 12 }}>¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.</div>
                 {deleteErr && (<div role="alert" className="fe-error" style={{ marginBottom: 8 }}><span className="fe-error-icon">⚠️</span><span>{deleteErr}</span></div>)}
