@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
 import Login from './Login';
+import { useLocation } from 'react-router-dom';
 
 interface Props {
   searchQuery: string;
@@ -35,6 +38,8 @@ const FlowerList: React.FC<Props> = ({
   bgImage
 }) => {
   const [showLogin, setShowLogin] = useState(false);
+
+  const location = useLocation();
 
   const scrollToTop = () => {
     if (typeof window !== 'undefined' && window.scrollTo) {
@@ -147,27 +152,50 @@ const FlowerList: React.FC<Props> = ({
         )}
       </div>
 
-      <div className="fe-pagination floating">
-        <button
-          type="button"
-          aria-label="Página anterior"
-          className="fe-pag-btn"
-          onClick={() => handlePageChangeInternal(Math.max(1, (page || 1) - 1))}
-          disabled={!(onPageChange && page && page > 1)}
-        >
-          Anterior
-        </button>
-        <div className="fe-pagination-info">Página {page || 1} / {totalPages || 1}</div>
-        <button
-          type="button"
-          aria-label="Página siguiente"
-          className="fe-pag-btn"
-          onClick={() => handlePageChangeInternal(Math.min(totalPages || 1, (page || 1) + 1))}
-          disabled={!(onPageChange && page && totalPages && page < totalPages)}
-        >
-          Siguiente
-        </button>
-      </div>
+      {/* Render pagination into a portal so fixed positioning isn't affected by parent transforms */}
+      {(() => {
+        const paginationInner = (
+          <div className="fe-pagination floating">
+            <button
+              type="button"
+              aria-label="Página anterior"
+              className="fe-pag-btn"
+              onClick={() => handlePageChangeInternal(Math.max(1, (page || 1) - 1))}
+              disabled={!(onPageChange && page && page > 1)}
+            >
+              Anterior
+            </button>
+            <div className="fe-pagination-info">Página {page || 1} / {totalPages || 1}</div>
+            <button
+              type="button"
+              aria-label="Página siguiente"
+              className="fe-pag-btn"
+              onClick={() => handlePageChangeInternal(Math.min(totalPages || 1, (page || 1) + 1))}
+              disabled={!(onPageChange && page && totalPages && page < totalPages)}
+            >
+              Siguiente
+            </button>
+          </div>
+        );
+        const portalNode = (typeof document !== 'undefined' && document.body) ? document.body : null;
+        // consider we're on the list view when not on a detail or upload route
+        const isListView = typeof location !== 'undefined' && !location.pathname.startsWith('/photos/') && !location.pathname.startsWith('/upload');
+
+        const animated = (
+          <AnimatePresence>
+            {isListView && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
+                {paginationInner}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        );
+
+        if (portalNode) {
+          return createPortal(animated, portalNode as any);
+        }
+        return animated;
+      })()}
     </>
   );
 };

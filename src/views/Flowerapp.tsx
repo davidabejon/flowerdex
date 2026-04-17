@@ -7,6 +7,7 @@ import { API_BASE, apiFetch } from '../utils/api';
 import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
 import Layout from '../components/Layout';
+import { AnimatePresence, motion } from 'framer-motion';
 import { type Flower } from '../data/flowersData';
 
 // ─── COMPONENTS ───
@@ -168,38 +169,42 @@ export const FlowerEncyclopedia: React.FC = () => {
   return (
     <>
       <Layout title={layoutTitle} footerLeft={footerLeft} footerRight={footerRight} onLogin={login} onLogout={logout}>
-        {matchDetails ? (
-          // if URL is /photos/:id render detail; try to find the flower in current list
-          (() => {
-            const id = matchDetails.params.id;
-            const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
-            const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
-            return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
-          })()
-        ) : matchUpload ? (
-          <UploadView
-            onUploaded={() => { loadFlowers(); navigate('/'); }}
-            onDuplicate={(p) => {
-              navigate(`/photos/${p.id}`);
-            }}
-          />
-        ) : (
-          <FlowerList
-            searchQuery={inputQuery}
-            setSearchQuery={setInputQuery}
-            bgImage={bgImage}
-            selectedTags={selectedTags}
-            toggleTag={toggleTag}
-            tagsOpen={tagsOpen}
-            setTagsOpen={setTagsOpen}
-            filteredFlowers={filteredFlowers}
-            handleShowDetail={handleShowDetail}
-            onOpenUpload={() => navigate('/upload')}
-            page={page}
-            totalPages={totalPages}
-            onPageChange={(p) => setPage(p)}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div key={location.pathname} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.22 }}>
+            {matchDetails ? (
+              // if URL is /photos/:id render detail; try to find the flower in current list
+              (() => {
+                const id = matchDetails.params.id;
+                const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
+                const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
+                return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
+              })()
+            ) : matchUpload ? (
+              <UploadView
+                onUploaded={() => { loadFlowers(); navigate('/'); }}
+                onDuplicate={(p) => {
+                  navigate(`/photos/${p.id}`);
+                }}
+              />
+            ) : (
+              <FlowerList
+                searchQuery={inputQuery}
+                setSearchQuery={setInputQuery}
+                bgImage={bgImage}
+                selectedTags={selectedTags}
+                toggleTag={toggleTag}
+                tagsOpen={tagsOpen}
+                setTagsOpen={setTagsOpen}
+                filteredFlowers={filteredFlowers}
+                handleShowDetail={handleShowDetail}
+                onOpenUpload={() => navigate('/upload')}
+                page={page}
+                totalPages={totalPages}
+                onPageChange={(p) => setPage(p)}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
         {!loggedIn && (
           <Login bgImage={bgImage} onSuccess={() => { setLoggedIn(true); loadFlowers(1, searchQuery); }} onClose={() => { }} />
         )}

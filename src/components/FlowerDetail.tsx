@@ -245,16 +245,16 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
               </div>
               {details.enrichment?.trefle?.image_url ? (
                 <div style={{ marginTop: 8, paddingLeft: 12, paddingRight: 12 }}>
-                  <div className="fe-trefle-hero">
-                    <img
-                      src={details.enrichment.trefle.image_url}
-                      alt="trefle"
-                      onLoad={() => setMainImgLoaded(true)}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 10, background: 'var(--sand)', opacity: mainImgLoaded ? 1 : 0, transition: 'opacity 320ms ease-in-out' }}
-                    />
-                    <div className="fe-trefle-caption">imagen de muestra</div>
+                    <div className="fe-trefle-hero" style={{ minHeight: 220 }}>
+                      <img
+                        src={details.enrichment.trefle.image_url}
+                        alt="trefle"
+                        onLoad={() => setMainImgLoaded(true)}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 10, background: 'var(--sand)', opacity: mainImgLoaded ? 1 : 0, transition: 'opacity 320ms ease-in-out' }}
+                      />
+                      <div className="fe-trefle-caption">imagen de muestra</div>
+                    </div>
                   </div>
-                </div>
               ) : (
                 <div style={{ fontSize: 13, color: '#444', marginBottom: 8 }}>Imagen: —</div>
               )}
