@@ -202,6 +202,7 @@ export const FlowerEncyclopedia: React.FC = () => {
                 page={page}
                 totalPages={totalPages}
                 onPageChange={(p) => setPage(p)}
+                paginationVisible={loggedIn}
               />
             )}
           </motion.div>

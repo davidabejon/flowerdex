@@ -20,6 +20,7 @@ interface Props {
   page?: number;
   totalPages?: number;
   onPageChange?: (p: number) => void;
+  paginationVisible?: boolean;
 }
 
 const FlowerList: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const FlowerList: React.FC<Props> = ({
   page,
   totalPages,
   onPageChange,
+  paginationVisible = true,
   bgImage
 }) => {
   const [showLogin, setShowLogin] = useState(false);
@@ -187,7 +189,7 @@ const FlowerList: React.FC<Props> = ({
         );
         const portalNode = (typeof document !== 'undefined' && document.body) ? document.body : null;
         // consider we're on the list view when not on a detail or upload route
-        const isListView = typeof location !== 'undefined' && !location.pathname.startsWith('/photos/') && !location.pathname.startsWith('/upload');
+        const isListView = typeof location !== 'undefined' && !location.pathname.startsWith('/photos/') && !location.pathname.startsWith('/upload') && paginationVisible;
 
         const animated = (
           <AnimatePresence>
