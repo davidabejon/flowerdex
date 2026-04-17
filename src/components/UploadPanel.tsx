@@ -81,7 +81,7 @@ const UploadPanel: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
 
   return (
     <div role="region" aria-labelledby="upload-title" style={{ padding: 12, borderTop: '1px solid #eee' }}>
-      <div id="upload-title" style={{ marginBottom: 8 }}><strong>Sube una foto</strong></div>
+      <div id="upload-title" style={{ marginBottom: 8 }}><strong>Selecciona una foto</strong></div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
         <label className="visually-hidden" htmlFor="upload-input">Seleccionar foto</label>
         <input
@@ -98,7 +98,7 @@ const UploadPanel: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
           onClick={() => inputRef.current?.click()}
           style={{ padding: '8px 14px', background: 'var(--sand)', border: '2px solid var(--sand2)', borderRadius: 12, fontWeight: 800, color: 'var(--brown-dark)', fontFamily: 'var(--font)', cursor: 'pointer' }}
         >
-          {file ? 'Cambiar foto' : 'Seleccionar foto'}
+          {file ? 'Cambiar foto' : 'Abrir galería'}
         </button>
 
         <button type="button" onClick={submit} disabled={!file || uploading} aria-busy={uploading} style={{ padding: '8px 14px', background: 'var(--green)', border: 'none', borderRadius: 12, color: '#fff', fontWeight: 800, cursor: file ? 'pointer' : 'not-allowed' }}>

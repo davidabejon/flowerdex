@@ -703,6 +703,52 @@
   border-color: rgba(124, 179, 132, 0.35);
 }
 
+/* Upload view specific styles to reduce empty space and add AC flair */
+.fe-upload-hero {
+  padding: 18px 14px;
+  background: linear-gradient(180deg, rgba(125,197,126,0.12), rgba(255,255,255,0.0));
+  border-bottom: 3px solid var(--sand2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fe-upload-hero-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 720px;
+  width: 100%;
+}
+.fe-upload-hero .fe-topbar-leaf { font-size: 28px; }
+.fe-upload-hero .fe-detail-name { font-size: 20px; font-weight: 900; color: var(--brown-dark); }
+.fe-upload-sub { color: var(--brown); font-weight: 700; opacity: 0.9; margin-left: 6px; }
+
+.fe-upload-layout {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  max-width: 920px;
+  margin: 0 auto 40px;
+  width: 100%;
+}
+.fe-upload-main { flex: 1; }
+.fe-upload-side { width: 220px; display: flex; flex-direction: column; gap: 12px; }
+.fe-upload-tip { padding: 12px; }
+.fe-upload-recent { padding: 12px; }
+.fe-upload-thumb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.fe-upload-thumb { background: linear-gradient(180deg, var(--white-pill), #fff8ee); border: 2px solid var(--sand2); border-radius: 12px; display: flex; align-items: center; justify-content: center; height: 64px; }
+.fe-upload-thumb-inner { font-size: 28px; }
+
+@media (max-width: 840px) {
+  .fe-upload-layout { flex-direction: column; padding: 10px; }
+  .fe-upload-side { width: 100%; }
+}
+
+@media (max-width: 420px) {
+  .fe-upload-hero-inner { gap: 8px; }
+  .fe-upload-thumb { height: 128px; }
+}
+
 /* Ensure login inputs stay white even when OS/device applies dark styles */
 .fe-ac-panel input,
 .fe-ac-panel textarea,
