@@ -70,6 +70,13 @@
   z-index: 40;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+@supports not (backdrop-filter: blur(6px)) {
+  .fe-topbar {
+    background: rgba(255, 254, 250, 0.98);
+  }
 }
 
 .fe-topbar-back {
@@ -252,6 +259,7 @@
   overflow: hidden;
   position: relative;
   transition: transform 0.12s;
+  will-change: opacity, transform;
 }
 
 .fe-fcard:active {
@@ -872,4 +880,13 @@
   font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .fe-fcard {
+    will-change: auto;
+  }
 }

@@ -7,11 +7,12 @@ import { API_BASE, apiFetch } from '../utils/api';
 import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
 import Layout from '../components/Layout';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type Flower } from '../data/flowersData';
 
 // ─── COMPONENTS ───
 export const FlowerEncyclopedia: React.FC = () => {
+  const reducedMotion = useReducedMotion();
   const [searchQuery, setSearchQuery] = useState('');
   const [inputQuery, setInputQuery] = useState('');
   const [loggedIn, setLoggedIn] = useState<boolean>(() => !!localStorage.getItem('fd_token'));
@@ -170,7 +171,7 @@ export const FlowerEncyclopedia: React.FC = () => {
     <>
       <Layout title={layoutTitle} footerLeft={footerLeft} footerRight={footerRight} onLogin={login} onLogout={logout}>
         <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.22 }}>
+          <motion.div key={location.pathname} initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reducedMotion ? 0 : -6 }} transition={{ duration: reducedMotion ? 0 : 0.18 }} style={{ willChange: 'opacity, transform' }}>
             {matchDetails ? (
               // if URL is /photos/:id render detail; try to find the flower in current list
               (() => {
