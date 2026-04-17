@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { type Flower, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
@@ -50,6 +51,16 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
     fetchDetails();
     return () => { cancelled = true; };
   }, [flower?.id]);
+
+  // Block scroll when delete modal is open
+  useEffect(() => {
+    if (showDeleteModal) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [showDeleteModal]);
 
   // populate form when details load
   useEffect(() => {
@@ -303,27 +314,30 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
         )}
       </div>
 
-      <AnimatePresence>
-        {showDeleteModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0 : 0.15 }}
-            style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
-          >
-            <motion.div initial={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.15 }} style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%', willChange: 'opacity, transform' }}>
-              <div style={{ fontWeight: 800, marginBottom: 8 }}>Confirmar eliminación</div>
-              <div style={{ marginBottom: 12 }}>¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.</div>
-              {deleteErr && (<div role="alert" className="fe-error" style={{ marginBottom: 8 }}><span className="fe-error-icon">⚠️</span><span>{deleteErr}</span></div>)}
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                <button className="fe-pag-btn" onClick={() => { setShowDeleteModal(false); setDeleteErr(null); }} disabled={deleting}>Cancelar</button>
-                <button className="fe-pag-btn" onClick={() => deletePhoto()} disabled={deleting} style={{ background: '#b00020', color: '#fff' }}>{deleting ? 'Eliminando…' : 'Eliminar definitivamente'}</button>
-              </div>
+      {createPortal(
+        <AnimatePresence>
+          {showDeleteModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.15 }}
+              style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
+            >
+              <motion.div initial={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: reducedMotion ? 1 : 0.98, opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.15 }} style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%', willChange: 'opacity, transform' }}>
+                <div style={{ fontWeight: 800, marginBottom: 8 }}>Confirmar eliminación</div>
+                <div style={{ marginBottom: 12 }}>¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.</div>
+                {deleteErr && (<div role="alert" className="fe-error" style={{ marginBottom: 8 }}><span className="fe-error-icon">⚠️</span><span>{deleteErr}</span></div>)}
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <button className="fe-pag-btn" onClick={() => { setShowDeleteModal(false); setDeleteErr(null); }} disabled={deleting}>Cancelar</button>
+                  <button className="fe-pag-btn" onClick={() => deletePhoto()} disabled={deleting} style={{ background: '#b00020', color: '#fff' }}>{deleting ? 'Eliminando…' : 'Eliminar definitivamente'}</button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 };
