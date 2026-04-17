@@ -28,7 +28,8 @@ export const FlowerEncyclopedia: React.FC = () => {
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const match = useMatch('/photos/:id');
+  const matchDetails = useMatch('/photos/:id');
+  const matchUpload = useMatch('/upload');
   const [page, setPage] = useState(1);
   const [perPage] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
@@ -62,6 +63,16 @@ export const FlowerEncyclopedia: React.FC = () => {
       console.error('Failed to load photos', e);
     }
   }, [perPage]);
+
+  const login = useCallback(() => {
+    setLoggedIn(true);
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('fd_token');
+    setLoggedIn(false);
+    navigate('/');
+  }, [navigate]);
 
   // reload when page or searchQuery change
   useEffect(() => { loadFlowers(page, searchQuery); }, [page, searchQuery, loadFlowers]);
@@ -132,34 +143,40 @@ export const FlowerEncyclopedia: React.FC = () => {
 
   // compute layout title: home -> FlowerDex, detail -> flower name
   const layoutTitle = (() => {
-    if (match?.params?.id) {
-      const id = match.params.id;
+    if (matchDetails?.params?.id) {
+      const id = matchDetails.params.id;
       const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
       return found?.name || 'Sin identificar';
     }
-    if (location.pathname === '/upload') return 'Subir nueva flor';
+    if (matchUpload) return 'Subir nueva flor';
     return 'FlowerDex';
   })();
 
   // decide footer content (only the red "B" button on detail pages)
-  const footerChildren = match?.params?.id ? (
+  const footerRight = matchDetails ? (
     <div className="fe-ac-btn-hint" onClick={() => navigate('/')}>
-      <span className="fe-ac-btn-badge red">B</span> Cerrar
+      <span className="fe-ac-btn-badge red">B</span> Volver
+    </div>
+  ) : matchUpload ? (
+    <div className="fe-ac-btn-hint" onClick={() => navigate('/')}>
+      <span className="fe-ac-btn-badge red">B</span> Volver
     </div>
   ) : undefined;
 
+  const footerLeft = matchDetails || matchUpload ? <></> : undefined;
+
   return (
     <>
-      <Layout title={layoutTitle} footerChildren={footerChildren}>
-        {match ? (
+      <Layout title={layoutTitle} footerLeft={footerLeft} footerRight={footerRight} onLogin={login} onLogout={logout}>
+        {matchDetails ? (
           // if URL is /photos/:id render detail; try to find the flower in current list
           (() => {
-            const id = match.params.id;
+            const id = matchDetails.params.id;
             const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
             const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
             return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
           })()
-        ) : location.pathname === '/upload' ? (
+        ) : matchUpload ? (
           <UploadView
             onBack={() => { navigate('/'); loadFlowers(); }}
             onUploaded={() => { loadFlowers(); navigate('/'); }}
