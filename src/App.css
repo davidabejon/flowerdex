@@ -51,7 +51,8 @@
 .fe-screen {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  /* allow the inner scroll area to size correctly inside the viewport */
+  min-height: 0;
   flex: 1;
   position: relative;
 }
@@ -328,6 +329,8 @@
 .fe-detail-scroll {
   flex: 1;
   overflow-y: auto;
+  /* allow flex children to shrink so header/footer are excluded from the scroll area */
+  min-height: 0;
 }
 
 .fe-detail-hero {
