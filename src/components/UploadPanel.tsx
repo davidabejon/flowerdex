@@ -80,11 +80,13 @@ const UploadPanel: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
   };
 
   return (
-    <div style={{ padding: 12, borderTop: '1px solid #eee' }}>
-      <div style={{ marginBottom: 8 }}><strong>Sube una foto</strong></div>
+    <div role="region" aria-labelledby="upload-title" style={{ padding: 12, borderTop: '1px solid #eee' }}>
+      <div id="upload-title" style={{ marginBottom: 8 }}><strong>Sube una foto</strong></div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <label className="visually-hidden" htmlFor="upload-input">Seleccionar foto</label>
         <input
           id="upload-input"
+          aria-hidden="true"
           ref={(el) => { inputRef.current = el; }}
           type="file"
           accept="image/*"
@@ -92,19 +94,20 @@ const UploadPanel: React.FC<Props> = ({ onUploaded, onDuplicate }) => {
           style={{ display: 'none' }}
         />
         <button
+          type="button"
           onClick={() => inputRef.current?.click()}
           style={{ padding: '8px 14px', background: 'var(--sand)', border: '2px solid var(--sand2)', borderRadius: 12, fontWeight: 800, color: 'var(--brown-dark)', fontFamily: 'var(--font)', cursor: 'pointer' }}
         >
           {file ? 'Cambiar foto' : 'Seleccionar foto'}
         </button>
 
-        <button onClick={submit} disabled={!file || uploading} style={{ padding: '8px 14px', background: 'var(--green)', border: 'none', borderRadius: 12, color: '#fff', fontWeight: 800, cursor: file ? 'pointer' : 'not-allowed' }}>
+        <button type="button" onClick={submit} disabled={!file || uploading} aria-busy={uploading} style={{ padding: '8px 14px', background: 'var(--green)', border: 'none', borderRadius: 12, color: '#fff', fontWeight: 800, cursor: file ? 'pointer' : 'not-allowed' }}>
           {uploading ? 'Subiendo...' : 'Subir'}
         </button>
       </div>
-      {preview && <div style={{ marginTop: 12 }}><img src={preview} alt="preview" style={{ maxWidth: '100%', maxHeight: 260, borderRadius: 12, border: '3px solid var(--outline)' }} /></div>}
+      {preview && <div style={{ marginTop: 12 }}><img src={preview} alt={file ? `Preview de ${file.name}` : 'Preview'} style={{ maxWidth: '100%', maxHeight: 260, borderRadius: 12, border: '3px solid var(--outline)' }} /></div>}
       {error && (
-        <div style={{ marginTop: 12, padding: 10, background: 'rgba(255,240,240,0.95)', border: '1px solid rgba(220,100,100,0.25)', color: 'crimson', borderRadius: 12, fontWeight: 700, textAlign: 'center' }}>
+        <div role="alert" style={{ marginTop: 12, padding: 10, background: 'rgba(255,240,240,0.95)', border: '1px solid rgba(220,100,100,0.25)', color: 'crimson', borderRadius: 12, fontWeight: 700, textAlign: 'center' }}>
           {error}
         </div>
       )}

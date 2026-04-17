@@ -36,16 +36,19 @@ const Login: React.FC<Props> = ({ onSuccess, onClose, bgImage }) => {
   };
 
   return (
-    <div style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, backgroundImage: bgImage ? `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${bgImage})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="fe-ac-panel" style={{ width: 360, maxWidth: '94%', padding: 16, background: 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,246,237,0.96))' }}>
+    <div aria-hidden={false} style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60, backgroundImage: bgImage ? `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${bgImage})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div role="dialog" aria-modal="true" aria-labelledby="login-title" className="fe-ac-panel" style={{ width: 360, maxWidth: '94%', padding: 16, background: 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,246,237,0.96))' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-          <div style={{ fontWeight: 800 }}>Iniciar sesión</div>
+          <div id="login-title" style={{ fontWeight: 800 }}>Iniciar sesión</div>
+          <button type="button" aria-label="Cerrar" onClick={() => onClose && onClose()} style={{ background: 'transparent', border: 'none', fontSize: 18, cursor: 'pointer' }}>✕</button>
         </div>
-        {err && <div style={{ color: 'crimson', marginBottom: 8 }}>{err}</div>}
-        <input ref={userRef} placeholder="Usuario" value={user} onChange={e => setUser(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
-        <input type="password" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
+        {err && <div role="alert" style={{ color: 'crimson', marginBottom: 8 }}>{err}</div>}
+        <label className="visually-hidden" htmlFor="login-user">Usuario</label>
+        <input id="login-user" ref={userRef} aria-label="Usuario" placeholder="Usuario" value={user} onChange={e => setUser(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
+        <label className="visually-hidden" htmlFor="login-pass">Contraseña</label>
+        <input id="login-pass" type="password" aria-label="Contraseña" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ width: '100%', padding: 10, marginBottom: 8, borderRadius: 10, border: '1px solid var(--sand2)' }} />
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button className="fe-pag-btn" onClick={() => submit()} disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button>
+          <button type="button" className="fe-pag-btn" aria-busy={loading} onClick={() => submit()} disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button>
         </div>
       </div>
     </div>

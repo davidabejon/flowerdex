@@ -44,9 +44,9 @@ const FlowerList: React.FC<Props> = ({
         <span className="fe-topbar-title">Enciclopedia de flores</span>
         <div style={{ marginLeft: 'auto' }}>
           {localStorage.getItem('fd_token') ? (
-            <button className="fe-topbar-back" onClick={() => { saveToken(null); window.location.reload(); }}>Salir</button>
+            <button className="fe-topbar-back" type="button" aria-label="Cerrar sesión" onClick={() => { saveToken(null); window.location.reload(); }}>Salir</button>
           ) : (
-            <button className="fe-topbar-back" onClick={() => setShowLogin(true)}>Entrar</button>
+            <button className="fe-topbar-back" type="button" aria-label="Abrir formulario de ingreso" onClick={() => setShowLogin(true)}>Entrar</button>
           )}
         </div>
       </div>
@@ -57,9 +57,10 @@ const FlowerList: React.FC<Props> = ({
 
       <div className="fe-ac-panel">
         <div className="fe-search-row">
-          <span className="fe-search-icon">🔍</span>
+          <span className="fe-search-icon" aria-hidden>🔍</span>
           <input
             type="text"
+            aria-label="Buscar flores"
             placeholder="Buscar flor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -68,6 +69,9 @@ const FlowerList: React.FC<Props> = ({
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             className="fe-filter-btn"
+            type="button"
+            aria-controls="tags-area"
+            aria-expanded={tagsOpen}
             onClick={() => setTagsOpen(!tagsOpen)}
           >
             <span>🏷️</span>
@@ -75,32 +79,36 @@ const FlowerList: React.FC<Props> = ({
           </button>
           <button className="fe-filter-btn" onClick={() => onOpenUpload && onOpenUpload()}>
             <span>📸</span>
-            <span>Subir flor</span>
+            <span aria-hidden>Subir flor</span>
           </button>
         </div>
-        {tagsOpen && (
-          <div className="fe-tags-area open">
-            {Object.entries(CATS).map(([catKey, cat]) => (
-              <div key={catKey}>
-                <div className="fe-cat-label">
-                  {catKey === 'color' && '🎨'} {catKey === 'season' && '🍂'} {catKey === 'shape' && '🌸'} {catKey === 'origin' && '🌍'} {catKey === 'vibe' && '✨'} {cat.tags[0].split('')[0]}
+        <div id="tags-area" className={`fe-tags-area ${tagsOpen ? 'open' : ''}`}>
+          {tagsOpen && (
+            <>
+              {Object.entries(CATS).map(([catKey, cat]) => (
+                <div key={catKey}>
+                  <div className="fe-cat-label">
+                    {catKey === 'color' && '🎨'} {catKey === 'season' && '🍂'} {catKey === 'shape' && '🌸'} {catKey === 'origin' && '🌍'} {catKey === 'vibe' && '✨'} {cat.tags[0].split('')[0]}
+                  </div>
+                  <div className="fe-tag-row">
+                    {cat.tags.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        className={`fe-tag ${cat.cls} ${selectedTags.has(tag) ? 'selected' : ''}`}
+                        onClick={() => toggleTag(tag)}
+                        aria-pressed={selectedTags.has(tag)}
+                        style={TAG_STYLE[catKey] as any}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="fe-tag-row">
-                  {cat.tags.map((tag) => (
-                    <button
-                      key={tag}
-                      className={`fe-tag ${cat.cls} ${selectedTags.has(tag) ? 'selected' : ''}`}
-                      onClick={() => toggleTag(tag)}
-                      style={TAG_STYLE[catKey] as any}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </>
+          )}
+        </div>
       </div>
 
       <div className="fe-results-label">
@@ -109,8 +117,8 @@ const FlowerList: React.FC<Props> = ({
 
       <div className="fe-flower-grid">
         {filteredFlowers.length === 0 ? (
-          <div className="fe-empty">
-            <span>🌱</span>
+          <div className="fe-empty" role="status" aria-live="polite">
+            <span aria-hidden>🌱</span>
             <div>No se encontraron flores</div>
           </div>
         ) : (
@@ -118,7 +126,16 @@ const FlowerList: React.FC<Props> = ({
             <div
               key={flower.id}
               className="fe-fcard"
+              role="button"
+              tabIndex={0}
+              aria-label={`Ver detalles de ${flower.name}`}
               onClick={() => handleShowDetail(flower)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleShowDetail(flower);
+                }
+              }}
             >
               <div className="fe-fcard-img">
                 <ImageSlider images={flower.images} alt={flower.name} small />
@@ -133,9 +150,9 @@ const FlowerList: React.FC<Props> = ({
       </div>
 
       <div className="fe-pagination">
-        <button className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.max(1, (page||1) - 1))} disabled={!(onPageChange && page && page > 1)}>Anterior</button>
+        <button type="button" aria-label="Página anterior" className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.max(1, (page||1) - 1))} disabled={!(onPageChange && page && page > 1)}>Anterior</button>
         <div className="fe-pagination-info">Página {page || 1} / {totalPages || 1}</div>
-        <button className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.min(totalPages || 1, (page||1) + 1))} disabled={!(onPageChange && page && totalPages && page < totalPages)}>Siguiente</button>
+        <button type="button" aria-label="Página siguiente" className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.min(totalPages || 1, (page||1) + 1))} disabled={!(onPageChange && page && totalPages && page < totalPages)}>Siguiente</button>
       </div>
 
       <div className="fe-ac-footer">
