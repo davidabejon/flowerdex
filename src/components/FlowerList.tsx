@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
 import Login from './Login';
+// Header/Footer are provided by Layout; keep this component focused on list content
 import { saveToken } from '../utils/api';
 
 interface Props {
@@ -39,18 +40,6 @@ const FlowerList: React.FC<Props> = ({
 
   return (
     <>
-      <div className="fe-topbar">
-        <span className="fe-topbar-leaf">🌿</span>
-        <span className="fe-topbar-title">Enciclopedia de flores</span>
-        <div style={{ marginLeft: 'auto' }}>
-          {localStorage.getItem('fd_token') ? (
-            <button className="fe-topbar-back" type="button" aria-label="Cerrar sesión" onClick={() => { saveToken(null); window.location.reload(); }}>Salir</button>
-          ) : (
-            <button className="fe-topbar-back" type="button" aria-label="Abrir formulario de ingreso" onClick={() => setShowLogin(true)}>Entrar</button>
-          )}
-        </div>
-      </div>
-
       {showLogin && (
         <Login bgImage={bgImage} onSuccess={() => { setShowLogin(false); window.location.reload(); }} onClose={() => setShowLogin(false)} />
       )}
@@ -153,15 +142,6 @@ const FlowerList: React.FC<Props> = ({
         <button type="button" aria-label="Página anterior" className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.max(1, (page||1) - 1))} disabled={!(onPageChange && page && page > 1)}>Anterior</button>
         <div className="fe-pagination-info">Página {page || 1} / {totalPages || 1}</div>
         <button type="button" aria-label="Página siguiente" className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.min(totalPages || 1, (page||1) + 1))} disabled={!(onPageChange && page && totalPages && page < totalPages)}>Siguiente</button>
-      </div>
-
-      <div className="fe-ac-footer">
-        <div className="fe-ac-btn-hint">
-          <span className="fe-ac-btn-badge teal">A</span> Ver
-        </div>
-        <div className="fe-ac-btn-hint">
-          <span className="fe-ac-btn-badge red">B</span> Cerrar
-        </div>
       </div>
     </>
   );

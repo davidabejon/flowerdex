@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type Flower, TAG_STYLE } from '../data/flowersData';
 import ImageSlider from './ImageSlider';
+// Header/Footer are provided by Layout; keep this component focused on detail content
 import { catOf } from '../utils/functions';
 import { apiFetch } from '../utils/api';
 import PART_TRANSLATIONS from '../utils/partTranslations';
@@ -153,12 +154,6 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
 
   return (
     <>
-      <div className="fe-topbar">
-        <button className="fe-topbar-back" onClick={onBack}>
-          ←
-        </button>
-        <span className="fe-topbar-title">{flower.name}</span>
-      </div>
       <div className="fe-detail-scroll">
         <div className="fe-detail-hero">
           <ImageSlider images={flower.images} alt={flower.name} />
@@ -304,11 +299,7 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
           </div>
         )}
       </div>
-      <div className="fe-ac-footer">
-        <div className="fe-ac-btn-hint" onClick={() => navigate('/')}>
-          <span className="fe-ac-btn-badge red">B</span> Volver
-        </div>
-      </div>
+
       {showDeleteModal && (
         <div style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: 400, maxWidth: '90%' }}>

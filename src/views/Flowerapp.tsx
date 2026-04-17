@@ -6,6 +6,7 @@ import Login from '../components/Login';
 import { API_BASE, apiFetch } from '../utils/api';
 import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
+import Layout from '../components/Layout';
 import { type Flower } from '../data/flowersData';
 
 // ─── COMPONENTS ───
@@ -129,48 +130,64 @@ export const FlowerEncyclopedia: React.FC = () => {
     loadFlowers(page, searchQuery);
   }, [navigate, loadFlowers, page, searchQuery]);
 
+  // compute layout title: home -> FlowerDex, detail -> flower name
+  const layoutTitle = (() => {
+    if (match?.params?.id) {
+      const id = match.params.id;
+      const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
+      return found?.name || 'Sin identificar';
+    }
+    if (location.pathname === '/upload') return 'Subir nueva flor';
+    return 'FlowerDex';
+  })();
+
+  // decide footer content (only the red "B" button on detail pages)
+  const footerChildren = match?.params?.id ? (
+    <div className="fe-ac-btn-hint" onClick={() => navigate('/')}>
+      <span className="fe-ac-btn-badge red">B</span> Cerrar
+    </div>
+  ) : undefined;
+
   return (
     <>
-      <div className="fe-container">
-        <div className="fe-screen">
-          {match ? (
-            // if URL is /photos/:id render detail; try to find the flower in current list
-            (() => {
-              const id = match.params.id;
-              const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
-              const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
-              return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
-            })()
-          ) : location.pathname === '/upload' ? (
-            <UploadView
-              onBack={() => { navigate('/'); loadFlowers(); }}
-              onUploaded={() => { loadFlowers(); navigate('/'); }}
-              onDuplicate={(p) => {
-                navigate(`/photos/${p.id}`);
-              }}
-            />
-          ) : (
-            <FlowerList
-              searchQuery={inputQuery}
-              setSearchQuery={setInputQuery}
-              bgImage={bgImage}
-              selectedTags={selectedTags}
-              toggleTag={toggleTag}
-              tagsOpen={tagsOpen}
-              setTagsOpen={setTagsOpen}
-              filteredFlowers={filteredFlowers}
-              handleShowDetail={handleShowDetail}
-              onOpenUpload={() => navigate('/upload')}
-              page={page}
-              totalPages={totalPages}
-              onPageChange={(p) => setPage(p)}
-            />
-          )}
-          {!loggedIn && (
-            <Login bgImage={bgImage} onSuccess={() => { setLoggedIn(true); loadFlowers(1, searchQuery); }} onClose={() => {}} />
-          )}
-        </div>
-      </div>
+      <Layout title={layoutTitle} footerChildren={footerChildren}>
+        {match ? (
+          // if URL is /photos/:id render detail; try to find the flower in current list
+          (() => {
+            const id = match.params.id;
+            const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
+            const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
+            return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
+          })()
+        ) : location.pathname === '/upload' ? (
+          <UploadView
+            onBack={() => { navigate('/'); loadFlowers(); }}
+            onUploaded={() => { loadFlowers(); navigate('/'); }}
+            onDuplicate={(p) => {
+              navigate(`/photos/${p.id}`);
+            }}
+          />
+        ) : (
+          <FlowerList
+            searchQuery={inputQuery}
+            setSearchQuery={setInputQuery}
+            bgImage={bgImage}
+            selectedTags={selectedTags}
+            toggleTag={toggleTag}
+            tagsOpen={tagsOpen}
+            setTagsOpen={setTagsOpen}
+            filteredFlowers={filteredFlowers}
+            handleShowDetail={handleShowDetail}
+            onOpenUpload={() => navigate('/upload')}
+            page={page}
+            totalPages={totalPages}
+            onPageChange={(p) => setPage(p)}
+          />
+        )}
+        {!loggedIn && (
+          <Login bgImage={bgImage} onSuccess={() => { setLoggedIn(true); loadFlowers(1, searchQuery); }} onClose={() => { }} />
+        )}
+      </Layout>
     </>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import UploadPanel from './UploadPanel';
+// Header/Footer are provided by Layout; keep this view focused on upload content
 
 interface Props {
   onBack: () => void;
@@ -10,10 +11,7 @@ interface Props {
 const UploadView: React.FC<Props> = ({ onBack, onUploaded, onDuplicate }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <div className="fe-topbar">
-        <button className="fe-topbar-back" onClick={onBack}>←</button>
-        <span className="fe-topbar-title">Subir nueva flor</span>
-      </div>
+      <Header left={<button className="fe-topbar-back" onClick={onBack}>←</button>} title="Subir nueva flor" />
 
       <div className="fe-detail-scroll">
         <div style={{ padding: 12 }}>
@@ -22,6 +20,8 @@ const UploadView: React.FC<Props> = ({ onBack, onUploaded, onDuplicate }) => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
