@@ -118,7 +118,7 @@ const FlowerList: React.FC<Props> = ({
         {filteredFlowers.length === 0 ? '' : `${filteredFlowers.length} resultado${filteredFlowers.length !== 1 ? 's' : ''}`}
       </div>
 
-      <div className="fe-flower-grid">
+      <motion.div className="fe-flower-grid" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}>
         {filteredFlowers.length === 0 ? (
           <div className="fe-empty" role="status" aria-live="polite">
             <span aria-hidden>🌱</span>
@@ -126,7 +126,7 @@ const FlowerList: React.FC<Props> = ({
           </div>
         ) : (
           filteredFlowers.map((flower) => (
-            <div
+            <motion.div
               key={flower.id}
               className="fe-fcard"
               role="button"
@@ -139,6 +139,11 @@ const FlowerList: React.FC<Props> = ({
                   handleShowDetail(flower);
                 }
               }}
+              variants={{ hidden: { opacity: 0, y: 4, scale: 0.995 }, show: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: -4, scale: 0.995 } }}
+              initial="hidden"
+              animate="show"
+              exit="exit"
+              layout
             >
               <div className="fe-fcard-img">
                 <ImageSlider images={flower.images} alt={flower.name} small />
@@ -147,10 +152,10 @@ const FlowerList: React.FC<Props> = ({
                 )}
               </div>
               <div className="fe-fcard-tab">{flower.name}</div>
-            </div>
+            </motion.div>
           ))
         )}
-      </div>
+      </motion.div>
 
       {/* Render pagination into a portal so fixed positioning isn't affected by parent transforms */}
       {(() => {
