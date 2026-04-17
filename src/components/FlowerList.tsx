@@ -38,6 +38,17 @@ const FlowerList: React.FC<Props> = ({
 }) => {
   const [showLogin, setShowLogin] = useState(false);
 
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined' && window.scrollTo) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  };
+
+  const handlePageChangeInternal = (p: number) => {
+    if (onPageChange) onPageChange(p);
+    scrollToTop();
+  };
+
   return (
     <>
       {showLogin && (
@@ -138,10 +149,26 @@ const FlowerList: React.FC<Props> = ({
         )}
       </div>
 
-      <div className="fe-pagination">
-        <button type="button" aria-label="Página anterior" className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.max(1, (page||1) - 1))} disabled={!(onPageChange && page && page > 1)}>Anterior</button>
+      <div className="fe-pagination floating">
+        <button
+          type="button"
+          aria-label="Página anterior"
+          className="fe-pag-btn"
+          onClick={() => handlePageChangeInternal(Math.max(1, (page || 1) - 1))}
+          disabled={!(onPageChange && page && page > 1)}
+        >
+          Anterior
+        </button>
         <div className="fe-pagination-info">Página {page || 1} / {totalPages || 1}</div>
-        <button type="button" aria-label="Página siguiente" className="fe-pag-btn" onClick={() => onPageChange && onPageChange(Math.min(totalPages || 1, (page||1) + 1))} disabled={!(onPageChange && page && totalPages && page < totalPages)}>Siguiente</button>
+        <button
+          type="button"
+          aria-label="Página siguiente"
+          className="fe-pag-btn"
+          onClick={() => handlePageChangeInternal(Math.min(totalPages || 1, (page || 1) + 1))}
+          disabled={!(onPageChange && page && totalPages && page < totalPages)}
+        >
+          Siguiente
+        </button>
       </div>
     </>
   );
