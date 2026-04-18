@@ -176,9 +176,28 @@ app.get('/photos', async (req, res) => {
     let rows = [];
     if (q) {
       const like = `%${q.replace(/%/g, '')}%`;
-      const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos WHERE species LIKE ? OR metadata LIKE ?', [like, like]);
+      // Busca en: species, nombres comunes en español e inglés del Trefle (metadata y overrides)
+      const totalRow = await db.get(
+        `SELECT COUNT(*) as cnt FROM photos 
+         WHERE LOWER(species) LIKE LOWER(?) 
+         OR LOWER(json_extract(metadata, '$.enrichment.trefle.common_names.en')) LIKE LOWER(?) 
+         OR LOWER(json_extract(metadata, '$.enrichment.trefle.common_names.es')) LIKE LOWER(?)
+         OR LOWER(json_extract(overrides, '$.enrichment.trefle.common_names.en')) LIKE LOWER(?) 
+         OR LOWER(json_extract(overrides, '$.enrichment.trefle.common_names.es')) LIKE LOWER(?)`,
+        [like, like, like, like, like]
+      );
       total = totalRow ? totalRow.cnt || 0 : 0;
-      rows = await db.all('SELECT id, filename, species, overrides, misclassified FROM photos WHERE species LIKE ? OR metadata LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?', [like, like, perPage, offset]);
+      rows = await db.all(
+        `SELECT id, filename, species, overrides, misclassified FROM photos 
+         WHERE LOWER(species) LIKE LOWER(?) 
+         OR LOWER(json_extract(metadata, '$.enrichment.trefle.common_names.en')) LIKE LOWER(?) 
+         OR LOWER(json_extract(metadata, '$.enrichment.trefle.common_names.es')) LIKE LOWER(?)
+         OR LOWER(json_extract(overrides, '$.enrichment.trefle.common_names.en')) LIKE LOWER(?) 
+         OR LOWER(json_extract(overrides, '$.enrichment.trefle.common_names.es')) LIKE LOWER(?) 
+         ORDER BY created_at DESC 
+         LIMIT ? OFFSET ?`,
+        [like, like, like, like, like, perPage, offset]
+      );
     } else {
       const totalRow = await db.get('SELECT COUNT(*) as cnt FROM photos');
       total = totalRow ? totalRow.cnt || 0 : 0;
