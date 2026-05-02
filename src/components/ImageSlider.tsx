@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 interface Props {
   images: string[];
   alt?: string;
@@ -9,35 +9,89 @@ const ImageSlider: React.FC<Props> = ({ images, alt = '', small = false }) => {
   const [idx, setIdx] = useState(0);
   const [loaded, setLoaded] = useState<Set<number>>(new Set());
   const [maxRatio, setMaxRatio] = useState<number>(0.66); // height/width
+  const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   // Preload images, measure aspect ratios and mark loaded indices to allow smooth fade-in
   useEffect(() => {
     let cancelled = false;
+    
+    // Create a new AbortController for this effect
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+    
     setLoaded(new Set());
     setMaxRatio(small ? 1 : 0.66);
-    images.forEach((src, i) => {
-      try {
-        const img = new Image();
-        img.src = src;
-        const markLoaded = () => {
-          if (cancelled) return;
-          setLoaded(s => new Set(s).add(i));
-          try {
-            if (img.naturalWidth && img.naturalHeight && !small) {
-              const r = img.naturalHeight / img.naturalWidth;
-              setMaxRatio(prev => Math.max(prev, r));
+    
+    // Reset image refs
+    imagesRef.current = [];
+
+    const loadPromises = images.map((src, i) => {
+      return new Promise<void>((resolve) => {
+        try {
+          const img = new Image();
+          imagesRef.current[i] = img;
+          img.src = src;
+
+          const markLoaded = () => {
+            if (cancelled || signal.aborted) {
+              resolve();
+              return;
             }
-          } catch (e) { }
-        };
-        if (img.decode) {
-          img.decode().then(markLoaded).catch(() => { img.onload = markLoaded; });
-        } else {
-          img.onload = markLoaded;
+            setLoaded(s => new Set(s).add(i));
+            try {
+              if (img.naturalWidth && img.naturalHeight && !small) {
+                const r = img.naturalHeight / img.naturalWidth;
+                setMaxRatio(prev => Math.max(prev, r));
+              }
+            } catch (e) {
+              // ignore measurement errors
+            }
+            resolve();
+          };
+
+          const handleError = () => {
+            resolve();
+          };
+
+          if (img.decode) {
+            img.decode()
+              .then(markLoaded)
+              .catch(() => {
+                img.onload = markLoaded;
+                img.onerror = handleError;
+              });
+          } else {
+            img.onload = markLoaded;
+            img.onerror = handleError;
+          }
+        } catch (e) {
+          resolve();
         }
-      } catch (e) {
-        // ignore preload errors
-      }
+      });
     });
-    return () => { cancelled = true; };
+
+    // Don't wait for all promises - allow progressive loading
+    Promise.all(loadPromises).catch(() => {
+      // Ignore errors
+    });
+
+    return () => {
+      cancelled = true;
+      // Abort pending operations
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Clear image references
+      imagesRef.current.forEach(img => {
+        if (img) {
+          img.onload = null;
+          img.onerror = null;
+          img.src = '';
+        }
+      });
+      imagesRef.current = [];
+    };
   }, [images, small]);
 
   if (!images || images.length === 0) return <div style={{ fontSize: small ? 28 : 64 }}>{alt ? alt[0] : '🌸'}</div>;
