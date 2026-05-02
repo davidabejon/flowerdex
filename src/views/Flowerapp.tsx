@@ -1,5 +1,5 @@
 // FlowerEncyclopedia.tsx
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useMatch, useLocation } from 'react-router-dom';
 import FlowerList from '../components/FlowerList';
 import Login from '../components/Login';
@@ -25,8 +25,6 @@ export const FlowerEncyclopedia: React.FC = () => {
       return '';
     }
   });
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
-  const [tagsOpen, setTagsOpen] = useState(false);
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -104,35 +102,6 @@ export const FlowerEncyclopedia: React.FC = () => {
     }
   }, [location.pathname, loadFlowers, page, searchQuery]);
 
-  const filteredFlowers = useMemo(() => {
-    // If a server-side search is active, `flowers` already contains filtered results.
-    // Only apply tag filtering client-side.
-    const tOk = (f: Flower) => selectedTags.size === 0 || Array.from(selectedTags).every((t) => f.tags.includes(t));
-    return flowers.filter(f => tOk(f));
-  }, [selectedTags, flowers]);
-
-  const toggleTag = useCallback((tag: string) => {
-    setSelectedTags((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(tag)) {
-        newSet.delete(tag);
-      } else {
-        newSet.add(tag);
-      }
-      return newSet;
-    });
-  }, []);
-
-  const applyTag = useCallback(
-    (tag: string) => {
-      // ensure any detail view is closed
-      if (location.pathname.startsWith('/photos/')) navigate('/');
-      setSelectedTags((prev) => (prev.has(tag) ? new Set(prev) : new Set([...prev, tag])));
-      setTagsOpen(true);
-    },
-    [location.pathname, navigate]
-  );
-
   const handleShowDetail = useCallback((flower: Flower) => {
     navigate(`/photos/${flower.id}`);
   }, [navigate]);
@@ -178,7 +147,7 @@ export const FlowerEncyclopedia: React.FC = () => {
                 const id = matchDetails.params.id;
                 const found = id ? flowers.find(f => String(f.id) === String(id)) : null;
                 const f: Flower = found || { id: id ? Number(id) : 0, name: 'Sin identificar', latin: '', e: '🌸', images: [], desc: '', tags: [], };
-                return <FlowerDetail flower={f} onBack={handleShowList} applyTag={applyTag} />;
+                return <FlowerDetail flower={f} onBack={handleShowList} />;
               })()
             ) : matchUpload ? (
               <UploadView
@@ -192,11 +161,7 @@ export const FlowerEncyclopedia: React.FC = () => {
                 searchQuery={inputQuery}
                 setSearchQuery={setInputQuery}
                 bgImage={bgImage}
-                selectedTags={selectedTags}
-                toggleTag={toggleTag}
-                tagsOpen={tagsOpen}
-                setTagsOpen={setTagsOpen}
-                filteredFlowers={filteredFlowers}
+                filteredFlowers={flowers}
                 handleShowDetail={handleShowDetail}
                 onOpenUpload={() => navigate('/upload')}
                 page={page}
