@@ -73,47 +73,10 @@ const FlowerList: React.FC<Props> = ({
           />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            className="fe-filter-btn"
-            type="button"
-            aria-controls="tags-area"
-            aria-expanded={tagsOpen}
-            onClick={() => setTagsOpen(!tagsOpen)}
-          >
-            <span>🏷️</span>
-            <span>{tagsOpen ? 'Ocultar etiquetas' : 'Filtrar por etiquetas'}</span>
-          </button>
           <button className="fe-filter-btn" onClick={() => onOpenUpload && onOpenUpload()}>
             <span>📸</span>
             <span aria-hidden>Subir flor</span>
           </button>
-        </div>
-        <div id="tags-area" className={`fe-tags-area ${tagsOpen ? 'open' : ''}`}>
-          {tagsOpen && (
-            <>
-              {Object.entries(CATS).map(([catKey, cat]) => (
-                <div key={catKey}>
-                  <div className="fe-cat-label">
-                    {catKey === 'color' && '🎨'} {catKey === 'season' && '🍂'} {catKey === 'shape' && '🌸'} {catKey === 'origin' && '🌍'} {catKey === 'vibe' && '✨'} {cat.tags[0].split('')[0]}
-                  </div>
-                  <div className="fe-tag-row">
-                    {cat.tags.map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        className={`fe-tag ${cat.cls} ${selectedTags.has(tag) ? 'selected' : ''}`}
-                        onClick={() => toggleTag(tag)}
-                        aria-pressed={selectedTags.has(tag)}
-                        style={TAG_STYLE[catKey] as any}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </>
-          )}
         </div>
       </div>
 
