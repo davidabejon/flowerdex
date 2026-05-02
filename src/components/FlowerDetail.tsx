@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type Flower, TAG_STYLE } from '../data/flowersData';
+import { type Flower } from '../types/types';
 import ImageSlider from './ImageSlider';
-import { catOf } from '../utils/functions';
 import { apiFetch } from '../utils/api';
 import PART_TRANSLATIONS from '../utils/partTranslations';
 
 interface Props {
   flower: Flower;
   onBack: () => void;
-  applyTag: (tag: string) => void;
 }
 
-const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
+const FlowerDetail: React.FC<Props> = ({ flower, onBack }) => {
   const reducedMotion = useReducedMotion();
   const [details, setDetails] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -179,27 +177,6 @@ const FlowerDetail: React.FC<Props> = ({ flower, onBack, applyTag }) => {
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'center', marginTop: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 800 }}>EN</span>
             <div className="fe-detail-name" style={{ margin: 0, fontSize: 16 }}>{details?.enrichment?.trefle?.common_names?.en || '—'}</div>
-          </div>
-          <div className="fe-detail-tags-title">Etiquetas</div>
-          <div className="fe-detail-tags">
-            {flower.tags.map((tag) => {
-              const ce = catOf(tag);
-              const st = ce ? TAG_STYLE[ce[0]] : { bg: '#eee', color: '#555', border: '#ccc' };
-              return (
-                <span
-                  key={tag}
-                  className="fe-dtag"
-                  style={{
-                    background: st.bg,
-                    color: st.color,
-                    borderColor: st.border,
-                  }}
-                  onClick={() => applyTag(tag)}
-                >
-                  {tag}
-                </span>
-              );
-            })}
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type Flower, CATS, TAG_STYLE } from '../data/flowersData';
+import { type Flower } from '../types/types';
 import ImageSlider from './ImageSlider';
 import Login from './Login';
 import { useLocation } from 'react-router-dom';
@@ -10,10 +10,6 @@ interface Props {
   searchQuery: string;
   setSearchQuery: (v: string) => void;
   bgImage?: string;
-  selectedTags: Set<string>;
-  toggleTag: (tag: string) => void;
-  tagsOpen: boolean;
-  setTagsOpen: (v: boolean) => void;
   filteredFlowers: Flower[];
   handleShowDetail: (f: Flower) => void;
   onOpenUpload?: () => void;
@@ -26,10 +22,6 @@ interface Props {
 const FlowerList: React.FC<Props> = ({
   searchQuery,
   setSearchQuery,
-  selectedTags,
-  toggleTag,
-  tagsOpen,
-  setTagsOpen,
   filteredFlowers,
   handleShowDetail,
   onOpenUpload,

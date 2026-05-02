@@ -8,7 +8,7 @@ import UploadView from '../components/UploadView';
 import FlowerDetail from '../components/FlowerDetail';
 import Layout from '../components/Layout';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { type Flower } from '../data/flowersData';
+import { type Flower } from '../types/types';
 
 // ─── COMPONENTS ───
 export const FlowerEncyclopedia: React.FC = () => {
